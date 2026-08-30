@@ -600,7 +600,7 @@ document.getElementById('langEn').addEventListener('click',()=>{currentLang='en'
 
 const savedTheme=localStorage.getItem('enso-theme');
 if(savedTheme==='dark'||savedTheme==='light')document.documentElement.dataset.theme=savedTheme;
-else if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.dataset.theme='dark';
+else document.documentElement.dataset.theme='light';
 function updateThemeButton(){const dark=document.documentElement.dataset.theme==='dark';document.getElementById('themeIcon').textContent=dark?'☀':'☾';document.getElementById('themeLabel').textContent=dark?tx('Modo claro','Light mode'):tx('Modo escuro','Dark mode')}
 updateThemeButton();applyLanguage();
 document.getElementById('themeToggle').addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('enso-theme',next);updateThemeButton();if(oniSeries.length)drawOniChart();renderRegion();renderSoi()});
