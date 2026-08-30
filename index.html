@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<title>Monitor ENSO | CIDACS Clima</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2730%27 fill=%27%237B0A06%27/%3E%3Ctext x=%2732%27 y=%2740%27 text-anchor=%27middle%27 font-family=%27Verdana,sans-serif%27 font-size=%2728%27 font-weight=%27700%27 fill=%27white%27%3Eel%3C/text%3E%3C/svg%3E">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap');
+:root{
+  --bg:#EEEEEE;--surface:#FFFFFF;--surface-2:#F7F7F7;--surface-3:#E6E6E6;
+  --text:#7B0A06;--muted:#7F7F7F;--border:#D2D2D2;--shadow:0 4px 14px rgba(123,10,6,.055);
+  --brand:#7B0A06;--brand-strong:#5F0704;--brand-soft:#F4E8E6;--brand-line:#902D21;
+  --warm:#c53a32;--cold:#266da8;--neutral:#7F7F7F;--warn:#cc8a16;
+  --link:#7B0A06;--focus:#902D21;--chart-line:#7B0A06;--selected:#902D21;
+  --action:#7F7F7F;--action-hover:#902D21;--on-action:#FFFFFF;
+  --alert-bg:#FFF7F6;--alert-border:#D9A19B;--alert-title:#7B0A06;--alert-text:#7B0A06;
+  --map-ocean:#eaf5f8;--map-land:#d9dddf;
+  --radius:16px;--radius-sm:10px;
+}
+html[data-theme="dark"]{
+  --bg:#212121;--surface:#2f2f2f;--surface-2:#292929;--surface-3:#383838;
+  --text:#ececec;--muted:#b4b4b4;--border:#444444;--shadow:none;
+  --brand:#62c7d2;--brand-strong:#91dce4;--brand-soft:#26383a;--brand-line:#527b80;
+  --warm:#ff746c;--cold:#67aef0;--neutral:#a6a6a6;--warn:#f2b84b;
+  --link:#ececec;--focus:#b4b4b4;--chart-line:#f1f1f1;--selected:#4a4a4a;
+  --action:#444444;--action-hover:#5a5a5a;--on-action:#FFFFFF;
+  --alert-bg:#3b2826;--alert-border:#6f3a35;--alert-title:#ffaaa3;--alert-text:#e7c4c0;
+  --map-ocean:#253238;--map-land:#555a5d;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Verdana,Geneva,Tahoma,sans-serif;line-height:1.55;transition:background .2s,color .2s}
+h1,h2,h3,h4,.eyebrow,.current-situation-head h2,.section-head h2,.about-toggle strong{font-family:Montserrat,Verdana,Geneva,Tahoma,sans-serif}
+a{color:var(--link)}
+button,input{font:inherit}
+button:focus-visible,a:focus-visible{outline:3px solid color-mix(in srgb,var(--focus) 50%,transparent);outline-offset:2px}
+.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.topbar-inner{max-width:1180px;margin:auto;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;text-decoration:none;color:var(--text);min-width:0}
+.brand-logo-wrap{display:flex;align-items:center;justify-content:center;background:#fff;border-radius:8px;padding:4px 7px}
+.brand-logo{display:block;width:auto;height:40px;max-width:210px}
+html[data-theme="dark"] .brand-logo-wrap{background:#fff}
+.actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.nav-link,.icon-btn{border:1px solid var(--action);background:var(--action);color:var(--on-action);border-radius:999px;padding:8px 12px;cursor:pointer;text-decoration:none;font-size:12px;display:flex;align-items:center;gap:7px;transition:background .15s,border-color .15s,color .15s}
+.nav-link:hover,.icon-btn:hover{background:var(--action-hover);border-color:var(--action-hover);color:#fff}
+.container{max-width:1180px;margin:0 auto;padding:0 20px 42px}
+.hero{padding:52px 0 22px;max-width:900px}
+.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);font-weight:800}
+h1{font-size:clamp(2.1rem,6vw,4rem);line-height:1.03;letter-spacing:-.045em;margin:9px 0 16px;max-width:850px}
+.lead{font-size:clamp(1rem,2vw,1.18rem);max-width:850px;color:var(--muted);margin:0}
+.initiative{font-size:13px;color:var(--muted);margin:8px 0 0}.initiative a{font-weight:800;text-decoration:none}.initiative a:hover{text-decoration:underline}
+.project-actions{display:flex;align-items:stretch;gap:12px;flex-wrap:wrap;margin-top:20px}
+/* CTAs inspirados na linguagem visual do portal institucional do CIDACS: retangulares, compactos e com tipografia de destaque. */
+.project-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin:0;min-height:44px;padding:11px 20px;border-radius:2px;background:#7B0A06;border:2px solid #7B0A06;color:#fff;text-decoration:none;font-family:Montserrat,Verdana,Geneva,Tahoma,sans-serif;font-size:12px;font-weight:700;letter-spacing:.015em;line-height:1.25;transition:background .18s,border-color .18s,color .18s,transform .18s}
+.project-link:hover{background:#902D21;border-color:#902D21;color:#fff}
+.project-link:active{transform:translateY(1px)}
+.project-link.talanoa{background:#F3EFA1;border-color:#F3EFA1;color:#000;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;padding:8px 20px;line-height:1.18}
+.project-link.talanoa .talanoa-main{font-family:Montserrat,Verdana,Geneva,Tahoma,sans-serif;font-size:12px;font-weight:700;color:#000}
+.project-link.talanoa .talanoa-by{font-family:Verdana,Geneva,Tahoma,sans-serif;font-size:9.5px;font-weight:400;color:#000;opacity:.82;margin-top:2px}
+.project-link.talanoa:hover{background:#902D21;border-color:#902D21;color:#fff}
+.project-link.talanoa:hover .talanoa-main,.project-link.talanoa:hover .talanoa-by{color:#fff}
+html[data-theme="dark"] .project-link{background:#7B0A06;border-color:#7B0A06;color:#fff}
+html[data-theme="dark"] .project-link:hover{background:#902D21;border-color:#902D21;color:#fff}
+html[data-theme="dark"] .project-link.talanoa{background:#F3EFA1;border-color:#F3EFA1;color:#000}
+html[data-theme="dark"] .project-link.talanoa:hover{background:#902D21;border-color:#902D21;color:#fff}
+.alert-banner{display:flex;gap:15px;align-items:flex-start;background:var(--alert-bg);border:1px solid var(--alert-border);border-radius:var(--radius);padding:19px 20px;margin:12px 0 24px}
+.alert-icon{font-size:25px;line-height:1}.alert-banner h2{font-size:16px;color:var(--alert-title);margin:0 0 6px}.alert-banner p{font-size:13px;color:var(--alert-text);margin:0;line-height:1.65}.alert-meta{font-size:11.5px;color:var(--muted);margin-top:9px}.alert-meta a{font-weight:700}
+.current-situation{margin:18px 0}.current-situation .section-head{padding-bottom:6px}.current-situation-body{padding-top:0}.status-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0 0}
+.current-sst{margin-top:26px;padding-top:20px;border-top:1px solid var(--border)}
+.current-sst h3{font-size:15px;margin:0 0 6px;color:var(--text)}
+.current-sst p{font-size:12px;color:var(--muted);margin:0 0 13px;line-height:1.55}
+.current-sst-figure{margin:0;text-align:center}
+.current-sst-image-link{display:block;text-decoration:none}
+.current-sst-image{display:block;width:100%;height:auto;max-width:1040px;margin:0 auto;border:0;background:#fff}
+.current-sst-caption{font-size:11px;color:var(--muted);margin-top:9px;text-align:left;line-height:1.5}
+.current-sst-caption a{font-weight:700;text-decoration:none}.current-sst-caption a:hover{text-decoration:underline}
+.status-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.status-card .label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}.status-card .value{font-size:clamp(1.5rem,3vw,2.25rem);font-weight:800;line-height:1.12;margin:6px 0}.status-card .sub{font-size:12px;color:var(--muted)}
+.warm{color:var(--warm)}.cold{color:var(--cold)}.neutral{color:var(--neutral)}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin:18px 0;overflow:hidden}
+.section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:20px 22px 14px}.section-head h2{font-size:18px;margin:0}.section-head p{margin:4px 0 0;color:var(--muted);font-size:13px}.section-body{padding:0 22px 20px}
+.view-tabs{display:flex;gap:6px;padding:0 22px 14px;flex-wrap:wrap}.view-tab,.seg-btn{border:1px solid var(--action);background:var(--action);color:#fff;padding:7px 12px;border-radius:999px;cursor:pointer;font-size:12px;font-weight:700;transition:background .15s,border-color .15s,color .15s}.view-tab:hover,.seg-btn:hover{background:var(--action-hover);border-color:var(--action-hover);color:#fff}.view-tab.active,.seg-btn.active{background:var(--selected);color:#fff;border-color:var(--selected)}
+.panel[hidden]{display:none!important}
+.chart-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 8px}.chart-hint{font-size:11px;color:var(--muted)}.zoom-controls{display:flex;gap:5px;align-items:center}.zoom-btn{width:32px;height:30px;border:1px solid var(--action);border-radius:8px;background:var(--action);color:#fff;cursor:pointer;font-weight:800;transition:background .15s,border-color .15s}.zoom-btn:hover{background:var(--action-hover);border-color:var(--action-hover);color:#fff}.zoom-label{font-size:11px;color:var(--muted);min-width:36px;text-align:center}
+.chart-shell{position:relative;min-height:380px;overflow:hidden}.chart-shell svg{display:block;width:100%;height:auto;min-height:350px;touch-action:none;user-select:none}.chart-shell svg rect[id$="Hover"]{cursor:crosshair}.chart-shell svg.is-zoomed,.chart-shell svg.is-zoomed rect[id$="Hover"]{cursor:grab}.chart-shell svg.is-dragging,.chart-shell svg.is-dragging rect[id$="Hover"]{cursor:grabbing}.tooltip{position:absolute;pointer-events:none;opacity:0;transform:translate(12px,-100%);background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);padding:9px 11px;border-radius:9px;font-size:12px;white-space:nowrap;z-index:5}.tooltip.show{opacity:1}
+.source-box{border-top:1px solid var(--border);background:var(--surface-2);padding:11px 22px;font-size:11.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}.source-box strong{color:var(--text)}.source-box a{font-weight:700;text-decoration:none}.source-box a:hover{text-decoration:underline}
+
+.impact-selectors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 16px}
+.impact-selector{border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:12px 14px}.impact-selector-label{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;margin-bottom:8px}.impact-segments{display:flex;gap:7px;flex-wrap:wrap}.impact-choice{border:1px solid var(--action);background:var(--action);color:#fff;padding:8px 14px;border-radius:999px;cursor:pointer;font-size:12px;font-weight:800;min-width:92px;transition:background .15s,border-color .15s,color .15s}.impact-choice:hover{border-color:var(--action-hover);background:var(--action-hover);color:#fff}.impact-choice.active{background:var(--selected);color:#fff;border-color:var(--selected);box-shadow:none}
+.impact-period-note{font-size:11px;color:var(--muted);margin:-4px 0 13px}.impact-figure{margin:0}.impact-image-link{display:block;text-decoration:none}.impact-image{display:block;width:100%;height:auto;margin:0 auto;border:0;background:#f5f5f5}.impact-caption{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.55}.impact-caption strong{color:var(--text)}
+@media(max-width:700px){.impact-selectors{grid-template-columns:1fr}.impact-segments{display:grid;grid-template-columns:1fr 1fr}.impact-choice{border-radius:10px;min-width:0}}
+.source-list{list-style:none;margin:0;padding:0}.source-item{display:grid;grid-template-columns:minmax(180px,260px) 1fr auto;gap:18px;align-items:center;padding:15px 2px;border-bottom:1px solid var(--border)}.source-item:first-child{border-top:1px solid var(--border)}.source-item strong{font-size:13px;color:var(--text)}.source-item p{margin:0;font-size:12px;color:var(--muted);line-height:1.55}.source-item a{white-space:nowrap;font-size:12px;font-weight:750;text-decoration:none;color:var(--muted)}.source-item a:hover{color:var(--action-hover);text-decoration:underline}@media(max-width:760px){.source-item{grid-template-columns:1fr;gap:5px}.source-item a{margin-top:2px}}
+.raw-tools{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}.raw-tools input{width:min(320px,100%);background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:8px 10px}.raw-count{font-size:11px;color:var(--muted)}
+.table-scroll{overflow:auto;max-height:430px;border:1px solid var(--border);border-radius:10px}table{width:100%;border-collapse:collapse;font-size:12.5px}thead{position:sticky;top:0;background:var(--surface-2);z-index:2}th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border);white-space:nowrap}th{font-size:10.5px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}tbody tr:hover{background:var(--surface-2)}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:800}.pill.warm-bg{background:color-mix(in srgb,var(--warm) 16%,transparent);color:var(--warm)}.pill.cold-bg{background:color-mix(in srgb,var(--cold) 16%,transparent);color:var(--cold)}
+
+/* ENSO episode overview */
+.episode-overview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+.episode-column{border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--surface-2)}
+.episode-column-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 15px;border-bottom:1px solid var(--border);background:var(--surface)}
+.episode-column-head h3{margin:0;font-size:15px}.episode-column-head span{font-size:10.5px;color:var(--muted)}
+.episode-list{display:grid;gap:1px;background:var(--border);padding:1px}
+.episode-event{width:100%;border:0;border-radius:0;padding:8px 11px;text-align:center;cursor:help;font-weight:800;font-size:13px;line-height:1.15;transition:filter .15s,transform .15s;position:relative}
+.episode-event:hover,.episode-event:focus-visible{filter:brightness(.96);z-index:1;transform:scale(1.008)}
+.episode-event.elnino{color:#4b3215}.episode-event.lanina{color:#17354f}
+.episode-event.weak.elnino{background:#fff4df}.episode-event.moderate.elnino{background:#f7e0a8}.episode-event.strong.elnino{background:#efcb66}.episode-event.very-strong.elnino{background:#e89a4f}
+.episode-event.weak.lanina{background:#e5f7f8}.episode-event.moderate.lanina{background:#d9e7f2}.episode-event.strong.lanina{background:#abc4e2}.episode-event.very-strong.lanina{background:#6e9dce}
+html[data-theme="dark"] .episode-event.elnino,html[data-theme="dark"] .episode-event.lanina{color:#f4f4f4}
+html[data-theme="dark"] .episode-event.weak.elnino{background:#5a4528}html[data-theme="dark"] .episode-event.moderate.elnino{background:#755a25}html[data-theme="dark"] .episode-event.strong.elnino{background:#8d671d}html[data-theme="dark"] .episode-event.very-strong.elnino{background:#984b2e}
+html[data-theme="dark"] .episode-event.weak.lanina{background:#27484d}html[data-theme="dark"] .episode-event.moderate.lanina{background:#29445b}html[data-theme="dark"] .episode-event.strong.lanina{background:#31567e}html[data-theme="dark"] .episode-event.very-strong.lanina{background:#315f91}
+.episode-legend-wrap{margin-top:16px;border-top:1px solid var(--border);padding-top:14px}.episode-legend-title{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}.episode-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 20px}.episode-legend-row{display:grid;grid-template-columns:auto repeat(4,minmax(0,1fr));gap:6px;align-items:center}.episode-legend-phase{font-size:11px;font-weight:800;min-width:56px}.episode-legend-item{font-size:10px;text-align:center;border-radius:7px;padding:5px 4px;border:1px solid color-mix(in srgb,var(--border) 70%,transparent)}
+.episode-legend-item.elnino{color:#4b3215}.episode-legend-item.lanina{color:#17354f}.episode-legend-item.weak.elnino{background:#fff4df}.episode-legend-item.moderate.elnino{background:#f7e0a8}.episode-legend-item.strong.elnino{background:#efcb66}.episode-legend-item.very-strong.elnino{background:#e89a4f}.episode-legend-item.weak.lanina{background:#e5f7f8}.episode-legend-item.moderate.lanina{background:#d9e7f2}.episode-legend-item.strong.lanina{background:#abc4e2}.episode-legend-item.very-strong.lanina{background:#6e9dce}
+html[data-theme="dark"] .episode-legend-item{color:#f4f4f4!important}
+html[data-theme="dark"] .episode-legend-item.weak.elnino{background:#5a4528}html[data-theme="dark"] .episode-legend-item.moderate.elnino{background:#755a25}html[data-theme="dark"] .episode-legend-item.strong.elnino{background:#8d671d}html[data-theme="dark"] .episode-legend-item.very-strong.elnino{background:#984b2e}html[data-theme="dark"] .episode-legend-item.weak.lanina{background:#27484d}html[data-theme="dark"] .episode-legend-item.moderate.lanina{background:#29445b}html[data-theme="dark"] .episode-legend-item.strong.lanina{background:#31567e}html[data-theme="dark"] .episode-legend-item.very-strong.lanina{background:#315f91}
+.episode-note{font-size:11px;color:var(--muted);margin:12px 0 0}.episode-tooltip{position:fixed;display:none;pointer-events:none;z-index:1000;min-width:220px;max-width:290px;background:var(--surface);border:1px solid var(--border);box-shadow:0 12px 30px rgba(0,0,0,.18);border-radius:10px;padding:10px 12px;font-size:11.5px;color:var(--text);line-height:1.55}.episode-tooltip.show{display:block}.episode-tooltip strong{font-size:12.5px}.episode-tooltip-grid{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin-top:5px}.episode-tooltip-grid span:nth-child(odd){color:var(--muted)}
+@media(max-width:760px){.episode-overview{grid-template-columns:1fr}.episode-legend{grid-template-columns:1fr}.episode-legend-row{grid-template-columns:1fr 1fr 1fr 1fr}.episode-legend-phase{grid-column:1/-1}.episode-event{font-size:12.5px}}
+.region-topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}.frequency-switch{display:flex;gap:6px;flex-wrap:wrap}.region-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}.region-card{position:relative;text-align:left;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:13px;padding:14px 14px 13px;cursor:pointer;transition:transform .15s,border-color .15s,background .15s,box-shadow .15s,color .15s;min-height:112px}.region-card:hover{transform:translateY(-1px);border-color:var(--action-hover);background:var(--action-hover);color:#fff}.region-card.active{background:var(--selected);color:#fff;border-color:var(--selected);box-shadow:none}.region-card:hover .region-place,.region-card:hover .region-coords,.region-card.active .region-place,.region-card.active .region-coords{color:#fff!important}.region-card:hover .region-card-value,.region-card.active .region-card-value{color:#fff!important}.region-card .region-name{display:block;font-size:15px;font-weight:800;margin-bottom:3px}.region-card .region-place{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--brand);font-weight:800;margin-bottom:7px}.region-card .region-coords{display:block;font-size:10.5px;color:var(--muted);line-height:1.35;padding-right:58px}.region-card .region-card-value{position:absolute;right:13px;bottom:12px;font-size:17px;font-weight:800}.region-image-stage{position:relative;width:100%;aspect-ratio:2.55/1;margin:4px auto 20px;overflow:hidden;border:0;border-radius:0;background:transparent;min-height:0}.region-image-stage img{display:block;width:100%;height:100%;max-height:none;object-fit:cover;object-position:center center;background:transparent;margin:0 auto}.region-image-placeholder{display:none;min-height:260px;place-items:center;padding:24px;text-align:center;color:var(--muted);font-size:13px;font-weight:700;border:1px dashed var(--border);border-radius:10px}.region-image-stage.image-missing{aspect-ratio:auto}.region-image-stage.image-missing img{display:none}.region-image-stage.image-missing .region-image-placeholder{display:grid}
+.data-message{border:1px dashed var(--border);border-radius:10px;padding:22px;text-align:center;color:var(--muted);font-size:13px}
+.info-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.info-card,.method-card{padding:15px;border:1px solid var(--border);border-radius:12px;background:var(--surface)}.info-card h3,.method-card strong{font-size:13px;margin:0}.info-card p,.method-card p{font-size:11.5px;color:var(--muted);margin:6px 0 0;line-height:1.6}.info-card a,.method-card a{font-weight:700}
+.method-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+footer{padding:28px 0 6px;color:var(--muted);font-size:11px;text-align:center}.foot-links{display:flex;justify-content:center;gap:15px;flex-wrap:wrap;margin-top:7px}
+
+.lang-switch{display:flex;border:1px solid var(--action);border-radius:999px;overflow:hidden;background:var(--action)}
+.lang-btn{border:0;background:var(--action);color:#fff;padding:8px 10px;cursor:pointer;font-size:11px;font-weight:800;line-height:1}.lang-btn:hover{background:var(--action-hover);color:#fff}
+.lang-btn.active{background:var(--selected);color:#fff}
+.soi-switch{display:flex;gap:6px;flex-wrap:wrap}
+.about-section{margin:18px 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.about-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px;border:0;background:var(--action);color:#fff;cursor:pointer;text-align:left;transition:background .15s}.about-toggle:hover{background:var(--action-hover);color:#fff}
+.about-toggle strong{font-size:18px}.about-toggle span:last-child{font-size:18px;transition:transform .2s}.about-toggle[aria-expanded="true"] span:last-child{transform:rotate(180deg)}
+.about-content{padding:22px}.about-content[hidden]{display:none}.about-intro{font-size:13px;color:var(--muted);max-width:920px;margin:0 0 18px}
+.about-details{border-top:1px solid var(--border)}.about-details:first-of-type{border-top:0}.about-details summary{cursor:pointer;font-weight:800;padding:15px 2px;list-style:none}.about-details summary::-webkit-details-marker{display:none}.about-details summary::before{content:'›';display:inline-block;margin-right:9px;transition:transform .15s;color:var(--brand)}.about-details[open] summary::before{transform:rotate(90deg)}
+.about-copy{padding:0 2px 18px;max-width:980px;font-size:13px;color:var(--muted);line-height:1.72}.about-copy h3{color:var(--text);font-size:15px;margin:16px 0 6px}.about-copy p{margin:7px 0}.about-copy strong{color:var(--text)}
+.about-figure{display:block;width:min(940px,100%);height:auto;margin:18px auto 8px;border-radius:10px}.about-figure-placeholder{display:none;border:1px dashed var(--border);padding:28px;text-align:center;color:var(--muted);border-radius:10px;margin:16px 0}
+.equation-flow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}.equation-card{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:14px}.equation-card strong{display:block;margin-bottom:8px}.formula{font-family:Georgia,'Times New Roman',serif;font-size:16px;color:var(--text);overflow-x:auto;padding:8px 0}.formula .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.2}.formula .frac span:first-child{border-bottom:1px solid currentColor;padding:0 5px 3px}.formula .frac span:last-child{padding:3px 5px 0}
+.soi-note{font-size:12px;color:var(--muted);margin:10px 0 0}.soi-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin:4px 0 10px}.legend-swatch{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:-1px}
+
+@media(max-width:900px){.status-grid{grid-template-columns:repeat(2,1fr)}.info-grid{grid-template-columns:repeat(2,1fr)}.method-grid{grid-template-columns:1fr}.region-cards{grid-template-columns:repeat(2,1fr)}.equation-flow{grid-template-columns:1fr}}
+@media(max-width:680px){.nav-link{display:none}}
+@media(max-width:560px){.container,.topbar-inner{padding-left:12px;padding-right:12px}.hero{padding-top:34px}.status-grid,.info-grid,.region-cards{grid-template-columns:1fr}.section-head{padding:17px 16px 12px}.section-body{padding:0 16px 16px}.view-tabs{padding:0 16px 12px}.source-box{padding:10px 16px}.theme-label{display:none}.brand-logo{height:34px;max-width:170px}.alert-banner{padding:16px}.chart-shell{min-height:320px}.chart-shell svg{min-height:300px}.region-image-stage{aspect-ratio:2.15/1}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top" aria-label="Ir para o início">
+      <span class="brand-logo-wrap"><img class="brand-logo" src="https://cidacs.bahia.fiocruz.br/wp-content/themes/cidacs_new/img/logo-header.svg" alt="CIDACS"></span>
+    </a>
+    <div class="actions">
+      <a class="nav-link" href="#oni-section">ONI</a>
+      <a class="nav-link" href="#regions-section" data-pt="Regiões Niño" data-en="Niño regions">Regiões Niño</a>
+      <a class="nav-link" href="#soi-section">SOI</a>
+      <a class="nav-link" href="#impacts-section" data-pt="Impactos" data-en="Impacts">Impactos</a>
+      <a class="nav-link" href="#about-section" data-pt="Sobre os gráficos" data-en="About the graphs">Sobre os gráficos</a>
+      <a class="nav-link" href="#fontes" data-pt="Fontes" data-en="Sources">Fontes</a>
+      <div class="lang-switch" aria-label="Idioma / Language"><button class="lang-btn active" id="langPt" type="button">PT</button><button class="lang-btn" id="langEn" type="button">EN</button></div>
+      <button class="icon-btn" id="themeToggle" type="button" aria-label="Alternar modo claro e escuro"><span id="themeIcon">☾</span><span class="theme-label" id="themeLabel">Modo escuro</span></button>
+    </div>
+  </div>
+</div>
+
+<main class="container" id="top">
+  <section class="hero">
+    <div class="eyebrow" data-pt="CIDACS CLIMA · MONITOR ENSO" data-en="CIDACS CLIMA · ENSO MONITOR">CIDACS CLIMA · MONITOR ENSO</div>
+    <h1 data-pt="Monitor de El Niño e La Niña" data-en="El Niño and La Niña Monitor">Monitor de El Niño e La Niña</h1>
+    <p class="lead" data-pt="Monitoramento e síntese dos principais indicadores oceânicos e atmosféricos do El Niño–Oscilação Sul (ENSO), reunindo situação atual, séries históricas e impactos globais." data-en="Monitoring and synthesis of the main oceanic and atmospheric indicators of the El Niño–Southern Oscillation (ENSO), bringing together current conditions, historical series and global impacts.">Monitoramento e síntese dos principais indicadores oceânicos e atmosféricos do El Niño–Oscilação Sul (ENSO), reunindo situação atual, séries históricas e impactos globais.</p>
+    <p class="initiative"><span data-pt="Uma iniciativa da plataforma" data-en="An initiative of the">Uma iniciativa da plataforma</span> <a href="https://cidacs.bahia.fiocruz.br/cidacs-clima/" target="_blank" rel="noopener">CIDACS Clima</a>.</p>
+    <p class="initiative"><span data-pt="Elaborado por" data-en="Developed by">Elaborado por</span> <a href="https://jeandosreis.github.io/" target="_blank" rel="noopener">Jean dos Reis</a>.</p>
+    <div class="project-actions">
+      <a class="project-link" href="https://cidacs.bahia.fiocruz.br/cidacs-clima/" target="_blank" rel="noopener"><span data-pt="Conheça o projeto CIDACS Clima" data-en="Learn more about CIDACS Clima">Conheça o projeto CIDACS Clima</span> ↗</a>
+      <a class="project-link talanoa" href="https://politicaporinteiro.org/el-nino/" target="_blank" rel="noopener" aria-label="Monitor de atos públicos brasileiros por Instituto Talanoa">
+        <span class="talanoa-main" data-pt="Monitor de atos públicos brasileiros" data-en="Brazilian public acts monitor">Monitor de atos públicos brasileiros</span>
+        <span class="talanoa-by" data-pt="por Instituto Talanoa" data-en="by Instituto Talanoa">por Instituto Talanoa</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section current-situation" aria-labelledby="current-situation-title">
+    <div class="section-head">
+      <div>
+        <h2 id="current-situation-title" data-pt="Situação atual do El Niño" data-en="Current El Niño situation">Situação atual do El Niño</h2>
+        <p data-pt="Veja, em um só lugar, o alerta mais recente do CPC e os principais indicadores oceânicos e atmosféricos usados para acompanhar a evolução do ENSO." data-en="See the latest CPC alert and the main oceanic and atmospheric indicators used to track ENSO evolution in one place.">Veja, em um só lugar, o alerta mais recente do CPC e os principais indicadores oceânicos e atmosféricos usados para acompanhar a evolução do ENSO.</p>
+      </div>
+    </div>
+    <div class="section-body current-situation-body">
+
+    <section class="alert-banner" aria-label="Alerta CPC">
+      <div class="alert-icon" aria-hidden="true">⚠️</div>
+      <div>
+        <h2 id="alertTitle">ALERTA CPC — Síntese de agosto de 2026</h2>
+        <p id="alertText">El Niño is strengthening, with a greater than 90% chance of a very strong event during the Northern Hemisphere fall and winter 2026-27.</p>
+        <div class="alert-meta" id="alertMeta">Para mais informações, acesse a <a href="https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml" target="_blank" rel="noopener"><strong>discussão diagnóstica na íntegra ↗</strong></a></div>
+      </div>
+    </section>
+
+    <section class="status-grid" aria-label="Resumo atual">
+      <article class="status-card"><div class="label" data-pt="Classificação atual" data-en="Current classification">Classificação atual</div><div class="value" id="statusClass">—</div><div class="sub" id="statusClassSub">Baseada no ONI</div></article>
+      <article class="status-card"><div class="label">ONI</div><div class="value" id="statusOni">—</div><div class="sub" id="statusOniSub">NOAA/PSL</div></article>
+      <article class="status-card"><div class="label" data-pt="Niño 3.4 relativo" data-en="Relative Niño 3.4">Niño 3.4 relativo</div><div class="value" id="statusN34">—</div><div class="sub" id="statusN34Sub">CPC · OISSTv2.1</div></article>
+      <article class="status-card"><div class="label" data-pt="SOI · média de 3 meses" data-en="SOI · 3-month mean">SOI · média de 3 meses</div><div class="value neutral" id="statusSoi">—</div><div class="sub" id="statusSoiSub" data-pt="Componente atmosférica do ENSO" data-en="Atmospheric component of ENSO">Componente atmosférica do ENSO</div></article>
+    </section>
+
+    <div class="current-sst">
+      <h3 data-pt="Anomalias mensais mais recentes da temperatura da superfície do mar (SST)" data-en="Latest monthly sea-surface temperature (SST) anomalies">Anomalias mensais mais recentes da temperatura da superfície do mar (SST)</h3>
+      <p data-pt="Distribuição espacial das anomalias relativas mensais de SST no Pacífico e demais oceanos, atualizada pelo Climate Prediction Center." data-en="Spatial distribution of the latest monthly relative SST anomalies across the Pacific and other oceans, updated by the Climate Prediction Center.">Distribuição espacial das anomalias relativas mensais de SST no Pacífico e demais oceanos, atualizada pelo Climate Prediction Center.</p>
+      <figure class="current-sst-figure">
+        <a class="current-sst-image-link" href="https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_update/Monthly_RelSSTA_map-hr.png" target="_blank" rel="noopener">
+          <img class="current-sst-image" src="https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_update/Monthly_RelSSTA_map-hr.png" alt="Mapa mais recente de anomalias mensais relativas da temperatura da superfície do mar publicado pelo NOAA Climate Prediction Center">
+        </a>
+        <figcaption class="current-sst-caption"><strong data-pt="Fonte:" data-en="Source:">Fonte:</strong> NOAA Climate Prediction Center · <a href="https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_update/" target="_blank" rel="noopener" data-pt="ENSO Recent Evolution and Current Status ↗" data-en="ENSO Recent Evolution and Current Status ↗">ENSO Recent Evolution and Current Status ↗</a></figcaption>
+      </figure>
+    </div>
+    </div>
+  </section>
+
+  <section class="section" id="oni-section">
+    <div class="section-head"><div><h2 data-pt="Conheça a série histórica do El Niño" data-en="Explore the historical El Niño series">Conheça a série histórica do El Niño</h2><p data-pt="O gráfico usa o Oceanic Niño Index (ONI), índice de referência da NOAA Physical Sciences Laboratory e do Climate Prediction Center para identificar e classificar episódios de El Niño e La Niña a partir das anomalias de temperatura da superfície do mar na região Niño 3.4 e de sua persistência." data-en="This chart uses the Oceanic Niño Index (ONI), the reference index used by NOAA's Physical Sciences Laboratory and Climate Prediction Center to identify and classify El Niño and La Niña episodes from sea-surface temperature anomalies in the Niño 3.4 region and their persistence.">O gráfico usa o Oceanic Niño Index (ONI), índice de referência da NOAA Physical Sciences Laboratory e do Climate Prediction Center para identificar e classificar episódios de El Niño e La Niña a partir das anomalias de temperatura da superfície do mar na região Niño 3.4 e de sua persistência.</p></div></div>
+    <div class="view-tabs" role="tablist" aria-label="Visualização ONI">
+      <button class="view-tab active" data-tabs="oni" data-target="chart" type="button" data-pt="Gráfico" data-en="Chart">Gráfico</button>
+      <button class="view-tab" data-tabs="oni" data-target="raw" type="button" data-pt="Dados brutos" data-en="Raw data">Dados brutos</button>
+    </div>
+    <div class="section-body">
+      <div class="panel" data-panel-group="oni" data-panel="chart">
+        <div class="chart-toolbar">
+          <div class="chart-hint" data-pt="Passe o mouse para consultar cada valor. Use a roda do mouse ou os botões para ampliar; com o zoom ativo, clique e arraste o gráfico para navegar no tempo." data-en="Hover to inspect each value. Use the mouse wheel or buttons to zoom; when zoomed in, click and drag the chart to move through time.">Passe o mouse para consultar cada valor. Use a roda do mouse ou os botões para ampliar; com o zoom ativo, clique e arraste o gráfico para navegar no tempo.</div>
+          <div class="zoom-controls" aria-label="Controles de zoom do gráfico ONI">
+            <button class="zoom-btn" id="oniZoomOut" type="button" title="Afastar">−</button>
+            <span class="zoom-label" id="oniZoomLabel">1×</span>
+            <button class="zoom-btn" id="oniZoomIn" type="button" title="Aproximar">+</button>
+            <button class="zoom-btn" id="oniZoomReset" type="button" title="Restaurar">↺</button>
+          </div>
+        </div>
+        <div class="chart-shell" id="oniChartShell"><svg id="oniChart" viewBox="0 0 1100 430" role="img" aria-label="Série temporal do ONI"></svg><div class="tooltip" id="oniTooltip"></div></div>
+      </div>
+      <div class="panel" data-panel-group="oni" data-panel="raw" hidden>
+        <div class="raw-tools"><input id="oniFilter" type="search" placeholder="Filtrar por ano ou período…"><span class="raw-count" id="oniCount"></span></div>
+        <div class="table-scroll"><table><thead><tr><th data-pt="Ano" data-en="Year">Ano</th><th data-pt="Mês central" data-en="Central month">Mês central</th><th data-pt="Período" data-en="Period">Período</th><th>ONI (°C)</th><th data-pt="Classe" data-en="Class">Classe</th></tr></thead><tbody id="oniRawBody"></tbody></table></div>
+      </div>
+    </div>
+    <div class="source-box"><strong data-pt="Fonte:" data-en="Source:">Fonte:</strong> NOAA Physical Sciences Laboratory / Climate Prediction Center <a href="https://psl.noaa.gov/data/correlation/oni.data" target="_blank" rel="noopener">acessar dados ↗</a></div>
+  </section>
+
+  <section class="section" id="episodes-section">
+    <div class="section-head"><div><h2 data-pt="Episódios ENSO identificados na série ONI" data-en="ENSO episodes identified in the ONI series">Episódios ENSO identificados na série ONI</h2><p data-pt="Explore os episódios de El Niño e La Niña por intensidade. Passe o mouse sobre um evento para ver os detalhes." data-en="Explore El Niño and La Niña episodes by intensity. Hover over an event to see its details.">Explore os episódios de El Niño e La Niña por intensidade. Passe o mouse sobre um evento para ver os detalhes.</p></div></div>
+    <div class="view-tabs" role="tablist" aria-label="Episódios ENSO">
+      <button class="view-tab active" data-tabs="episodes" data-target="visual" type="button" data-pt="Visão geral" data-en="Overview">Visão geral</button>
+      <button class="view-tab" data-tabs="episodes" data-target="raw" type="button" data-pt="Dados brutos" data-en="Raw data">Dados brutos</button>
+    </div>
+    <div class="section-body">
+      <div class="panel" data-panel-group="episodes" data-panel="visual">
+        <div id="episodeVisual" class="episode-overview"></div>
+        <div class="episode-legend-wrap">
+          <div class="episode-legend-title" data-pt="Intensidade pelo pico do ONI" data-en="Intensity by peak ONI">Intensidade pelo pico do ONI</div>
+          <div class="episode-legend">
+            <div class="episode-legend-row"><span class="episode-legend-phase">El Niño</span><span class="episode-legend-item elnino weak" data-pt="Fraco" data-en="Weak">Fraco</span><span class="episode-legend-item elnino moderate" data-pt="Moderado" data-en="Moderate">Moderado</span><span class="episode-legend-item elnino strong" data-pt="Forte" data-en="Strong">Forte</span><span class="episode-legend-item elnino very-strong" data-pt="Muito forte" data-en="Very strong">Muito forte</span></div>
+            <div class="episode-legend-row"><span class="episode-legend-phase">La Niña</span><span class="episode-legend-item lanina weak" data-pt="Fraca" data-en="Weak">Fraca</span><span class="episode-legend-item lanina moderate" data-pt="Moderada" data-en="Moderate">Moderada</span><span class="episode-legend-item lanina strong" data-pt="Forte" data-en="Strong">Forte</span><span class="episode-legend-item lanina very-strong" data-pt="Muito forte" data-en="Very strong">Muito forte</span></div>
+          </div>
+          <p class="episode-note" data-pt="Critério: pelo menos cinco janelas consecutivas com ONI ≥ +0,5°C para El Niño ou ONI ≤ −0,5°C para La Niña. A classe exibida corresponde ao maior valor absoluto de ONI atingido durante cada episódio." data-en="Criterion: at least five consecutive windows with ONI ≥ +0.5°C for El Niño or ONI ≤ −0.5°C for La Niña. The displayed class corresponds to the largest absolute ONI value reached during each episode.">Critério: pelo menos cinco janelas consecutivas com ONI ≥ +0,5°C para El Niño ou ONI ≤ −0,5°C para La Niña. A classe exibida corresponde ao maior valor absoluto de ONI atingido durante cada episódio.</p>
+        </div>
+      </div>
+      <div class="panel" data-panel-group="episodes" data-panel="raw" hidden><div class="table-scroll"><table><thead><tr><th data-pt="Início" data-en="Start">Início</th><th data-pt="Fim" data-en="End">Fim</th><th data-pt="Tipo" data-en="Type">Tipo</th><th data-pt="Intensidade" data-en="Intensity">Intensidade</th><th data-pt="Pico" data-en="Peak">Pico</th><th data-pt="Janelas consecutivas" data-en="Consecutive windows">Janelas consecutivas</th></tr></thead><tbody id="episodeRawBody"></tbody></table></div></div>
+    </div>
+    <div id="episodeTooltip" class="episode-tooltip" role="tooltip"></div>
+    <div class="source-box"><strong data-pt="Fonte:" data-en="Source:">Fonte:</strong> série ONI da NOAA/PSL <a href="https://psl.noaa.gov/data/correlation/oni.data" target="_blank" rel="noopener" data-pt="acessar dados ↗" data-en="view data ↗">acessar dados ↗</a></div>
+  </section>
+
+  <section class="section" id="regions-section">
+    <div class="section-head"><div><h2 data-pt="Regiões Niño no Pacífico tropical" data-en="Niño regions in the tropical Pacific">Regiões Niño no Pacífico tropical</h2><p data-pt="Selecione uma das quatro regiões de monitoramento para explorar a evolução das anomalias relativas de temperatura da superfície do mar." data-en="Select one of the four monitoring regions to explore the evolution of relative sea-surface temperature anomalies.">Selecione uma das quatro regiões de monitoramento para explorar a evolução das anomalias relativas de temperatura da superfície do mar.</p></div></div>
+    <div class="section-body">
+      <div class="region-topbar">
+        <div class="chart-hint" data-pt="Selecione uma região para visualizar sua localização e explorar a série temporal." data-en="Select a region to view its location and explore the time series.">Selecione uma região para visualizar sua localização e explorar a série temporal.</div>
+        <div class="frequency-switch" aria-label="Periodicidade">
+          <button class="seg-btn active" data-frequency="monthly" type="button" data-pt="Mensal" data-en="Monthly">Mensal</button>
+          <button class="seg-btn" data-frequency="weekly" type="button" data-pt="Semanal" data-en="Weekly">Semanal</button>
+        </div>
+      </div>
+
+      <div class="region-cards" aria-label="Seleção das regiões Niño">
+        <button class="region-card" data-region="n4" type="button">
+          <span class="region-place" data-pt="Pacífico central" data-en="Central Pacific">Pacífico central</span>
+          <span class="region-name">Niño 4</span>
+          <span class="region-coords">5°N–5°S · 160°E–150°W</span>
+          <span class="region-card-value" id="cardVal-n4">—</span>
+        </button>
+        <button class="region-card active" data-region="n34" type="button">
+          <span class="region-place" data-pt="Pacífico centro-leste" data-en="Central-eastern Pacific">Pacífico centro-leste</span>
+          <span class="region-name">Niño 3.4</span>
+          <span class="region-coords">5°N–5°S · 170°W–120°W</span>
+          <span class="region-card-value" id="cardVal-n34">—</span>
+        </button>
+        <button class="region-card" data-region="n3" type="button">
+          <span class="region-place" data-pt="Pacífico oriental" data-en="Eastern Pacific">Pacífico oriental</span>
+          <span class="region-name">Niño 3</span>
+          <span class="region-coords">5°N–5°S · 150°W–90°W</span>
+          <span class="region-card-value" id="cardVal-n3">—</span>
+        </button>
+        <button class="region-card" data-region="n12" type="button">
+          <span class="region-place" data-pt="Costa da América do Sul" data-en="South American coast">Costa da América do Sul</span>
+          <span class="region-name">Niño 1+2</span>
+          <span class="region-coords">0–10°S · 90°W–80°W</span>
+          <span class="region-card-value" id="cardVal-n12">—</span>
+        </button>
+      </div>
+      <div class="region-image-stage" id="regionImageStage" aria-live="polite">
+        <img id="regionImage" src="imagens/regioes-nino/nino34.png" alt="Localização da região Niño 3.4 no Pacífico tropical">
+        <div class="region-image-placeholder" id="regionImagePlaceholder">Imagem da região Niño 3.4</div>
+      </div>
+
+      <div class="view-tabs" style="padding-left:0;padding-right:0" role="tablist" aria-label="Visualização da região Niño">
+        <button class="view-tab active" data-tabs="region" data-target="chart" type="button" data-pt="Gráfico" data-en="Chart">Gráfico</button>
+        <button class="view-tab" data-tabs="region" data-target="raw" type="button" data-pt="Dados brutos" data-en="Raw data">Dados brutos</button>
+      </div>
+      <div class="panel" data-panel-group="region" data-panel="chart">
+        <div class="chart-toolbar">
+          <div class="chart-hint" data-pt="Passe o mouse para consultar o ponto temporal mais próximo. Use a roda do mouse ou os botões + e − para ampliar; com o zoom ativo, clique, segure e arraste horizontalmente. Use ↺ para retornar à série completa." data-en="Hover to inspect the nearest time point. Use the mouse wheel or + and − buttons to zoom; when zoomed in, click, hold and drag horizontally. Use ↺ to return to the full series.">Passe o mouse para consultar o ponto temporal mais próximo. Use a roda do mouse ou os botões + e − para ampliar; com o zoom ativo, clique, segure e arraste horizontalmente. Use ↺ para retornar à série completa.</div>
+          <div class="zoom-controls" aria-label="Controles de zoom do gráfico da região Niño">
+            <button class="zoom-btn" id="regionZoomOut" type="button" title="Afastar">−</button><span class="zoom-label" id="regionZoomLabel">1×</span><button class="zoom-btn" id="regionZoomIn" type="button" title="Aproximar">+</button><button class="zoom-btn" id="regionZoomReset" type="button" title="Restaurar">↺</button>
+          </div>
+        </div>
+        <div class="chart-shell" id="regionChartShell"><svg id="regionChart" viewBox="0 0 1100 390" role="img" aria-label="Série temporal da região Niño selecionada"></svg><div class="tooltip" id="regionTooltip"></div></div>
+        <div class="data-message" id="regionMessage" hidden>Não foi possível carregar esta série no momento. Use o link da fonte abaixo para consultar os dados oficiais.</div>
+      </div>
+      <div class="panel" data-panel-group="region" data-panel="raw" hidden>
+        <div class="raw-tools"><input id="regionFilter" type="search" placeholder="Filtrar por ano ou data…"><span class="raw-count" id="regionCount"></span></div>
+        <div class="table-scroll"><table><thead id="regionRawHead"></thead><tbody id="regionRawBody"></tbody></table></div>
+      </div>
+    </div>
+    <div class="source-box" id="regionSourceBox"><strong data-pt="Fonte:" data-en="Source:">Fonte:</strong> NOAA Climate Prediction Center · Monthly Relative OISSTv2.1 (base 1991–2020) <a href="https://www.cpc.ncep.noaa.gov/data/indices/rel_mthsst9120.txt" target="_blank" rel="noopener">acessar dados mensais ↗</a></div>
+  </section>
+
+  <section class="section" id="soi-section">
+    <div class="section-head"><div><h2>Southern Oscillation Index (SOI)</h2><p data-pt="Componente atmosférica do ENSO baseada na diferença padronizada de pressão ao nível do mar entre Tahiti e Darwin." data-en="Atmospheric component of ENSO based on the standardized sea-level pressure difference between Tahiti and Darwin.">Componente atmosférica do ENSO baseada na diferença padronizada de pressão ao nível do mar entre Tahiti e Darwin.</p></div></div>
+    <div class="section-body">
+      <div class="region-topbar">
+        <div class="chart-hint" data-pt="Valores negativos persistentes tendem a acompanhar El Niño; valores positivos persistentes tendem a acompanhar La Niña." data-en="Persistent negative values tend to accompany El Niño; persistent positive values tend to accompany La Niña.">Valores negativos persistentes tendem a acompanhar El Niño; valores positivos persistentes tendem a acompanhar La Niña.</div>
+        <div class="soi-switch" aria-label="Série SOI">
+          <button class="seg-btn active" data-soi-frequency="monthly" type="button" data-pt="Mensal" data-en="Monthly">Mensal</button>
+          <button class="seg-btn" data-soi-frequency="3m" type="button" data-pt="Média móvel de 3 meses" data-en="3-month running mean">Média móvel de 3 meses</button>
+        </div>
+      </div>
+      <div class="view-tabs" style="padding-left:0;padding-right:0" role="tablist" aria-label="Visualização SOI">
+        <button class="view-tab active" data-tabs="soi" data-target="chart" type="button" data-pt="Gráfico" data-en="Chart">Gráfico</button>
+        <button class="view-tab" data-tabs="soi" data-target="raw" type="button" data-pt="Dados brutos" data-en="Raw data">Dados brutos</button>
+      </div>
+      <div class="panel" data-panel-group="soi" data-panel="chart">
+        <div class="chart-toolbar"><div class="chart-hint" data-pt="Passe o mouse para consultar o ponto temporal mais próximo. Use a roda do mouse ou os botões + e − para ampliar; com o zoom ativo, clique, segure e arraste horizontalmente. Use ↺ para retornar à série completa." data-en="Hover to inspect the nearest time point. Use the mouse wheel or + and − buttons to zoom; when zoomed in, click, hold and drag horizontally. Use ↺ to return to the full series.">Passe o mouse para consultar o ponto temporal mais próximo. Use a roda do mouse ou os botões + e − para ampliar; com o zoom ativo, clique, segure e arraste horizontalmente. Use ↺ para retornar à série completa.</div>
+          <div class="zoom-controls" aria-label="Controles de zoom do gráfico SOI"><button class="zoom-btn" id="soiZoomOut" type="button" title="Afastar">−</button><span class="zoom-label" id="soiZoomLabel">1×</span><button class="zoom-btn" id="soiZoomIn" type="button" title="Aproximar">+</button><button class="zoom-btn" id="soiZoomReset" type="button" title="Restaurar">↺</button></div>
+        </div>
+        <div class="soi-legend"><span><span class="legend-swatch" style="background:#b73730"></span><span data-pt="SOI negativo · sinal atmosférico compatível com El Niño" data-en="Negative SOI · atmospheric signal consistent with El Niño">SOI negativo · sinal atmosférico compatível com El Niño</span></span><span><span class="legend-swatch" style="background:#276eaa"></span><span data-pt="SOI positivo · sinal atmosférico compatível com La Niña" data-en="Positive SOI · atmospheric signal consistent with La Niña">SOI positivo · sinal atmosférico compatível com La Niña</span></span></div>
+        <div class="chart-shell" id="soiChartShell"><svg id="soiChart" viewBox="0 0 1100 390" role="img" aria-label="Série temporal do SOI"></svg><div class="tooltip" id="soiTooltip"></div></div>
+        <div class="data-message" id="soiMessage" hidden data-pt="Não foi possível carregar esta série no momento. Use o link da fonte abaixo para consultar os dados oficiais." data-en="This series could not be loaded at the moment. Use the source link below to view the official data.">Não foi possível carregar esta série no momento. Use o link da fonte abaixo para consultar os dados oficiais.</div>
+      </div>
+      <div class="panel" data-panel-group="soi" data-panel="raw" hidden>
+        <div class="raw-tools"><input id="soiFilter" type="search" placeholder="Filtrar por ano…"><span class="raw-count" id="soiCount"></span></div>
+        <div class="table-scroll"><table><thead id="soiRawHead"></thead><tbody id="soiRawBody"></tbody></table></div>
+      </div>
+    </div>
+    <div class="source-box" id="soiSourceBox"><strong data-pt="Fonte:" data-en="Source:">Fonte:</strong> NOAA Climate Prediction Center · Southern Oscillation Index <a href="https://www.cpc.ncep.noaa.gov/data/indices/soi" target="_blank" rel="noopener" data-pt="acessar dados ↗" data-en="view data ↗">acessar dados ↗</a></div>
+  </section>
+
+  <section class="section" id="impacts-section">
+    <div class="section-head"><div><h2 data-pt="Impactos do ENSO" data-en="ENSO impacts">Impactos do ENSO</h2><p data-pt="Veja os padrões globais típicos de temperatura e precipitação associados a El Niño e La Niña em DJF e JJA, conforme as figuras oficiais da NOAA Climate.gov." data-en="Explore typical global temperature and precipitation patterns associated with El Niño and La Niña in DJF and JJA, using the official NOAA Climate.gov figures.">Veja os padrões globais típicos de temperatura e precipitação associados a El Niño e La Niña em DJF e JJA, conforme as figuras oficiais da NOAA Climate.gov.</p></div></div>
+    <div class="section-body">
+      <div class="impact-selectors">
+        <div class="impact-selector">
+          <span class="impact-selector-label" data-pt="Fase do ENSO" data-en="ENSO phase">Fase do ENSO</span>
+          <div class="impact-segments" role="group" aria-label="Fase do ENSO">
+            <button class="impact-choice active" data-impact-phase="elnino" type="button">El Niño</button>
+            <button class="impact-choice" data-impact-phase="lanina" type="button">La Niña</button>
+          </div>
+        </div>
+        <div class="impact-selector">
+          <span class="impact-selector-label" data-pt="Estação" data-en="Season">Estação</span>
+          <div class="impact-segments" role="group" aria-label="Estação">
+            <button class="impact-choice active" data-impact-season="djf" type="button">DJF</button>
+            <button class="impact-choice" data-impact-season="jja" type="button">JJA</button>
+          </div>
+        </div>
+      </div>
+      <div class="impact-period-note" data-pt="DJF = dezembro–fevereiro · JJA = junho–agosto" data-en="DJF = December–February · JJA = June–August">DJF = dezembro–fevereiro · JJA = junho–agosto</div>
+      <figure class="impact-figure">
+        <a class="impact-image-link" id="impactImageLink" href="https://www.climate.gov/sites/default/files/2021-10/ElNinoDJF.jpg" target="_blank" rel="noopener">
+          <img class="impact-image" id="impactImage" src="https://www.climate.gov/sites/default/files/2021-10/ElNinoDJF.jpg" alt="Impactos globais típicos de El Niño em DJF" loading="lazy" decoding="async">
+        </a>
+        <figcaption class="impact-caption" id="impactFigureCaption"><strong>El Niño · DJF</strong> — padrões globais típicos de temperatura e precipitação. As áreas representam relações climatológicas gerais e não uma previsão para um evento específico.</figcaption>
+      </figure>
+    </div>
+    <div class="source-box" id="impactSourceBox"><strong data-pt="Fonte:" data-en="Source:">Fonte:</strong> NOAA Climate.gov · <em>Global impacts of El Niño and La Niña</em> · Rebecca Lindsey · revisão: Tom Di Liberto · publicado em 9 fev. 2016 <a href="https://www.climate.gov/news-features/featured-images/global-impacts-el-ni%C3%B1o-and-la-ni%C3%B1a" target="_blank" rel="noopener" data-pt="ver fonte original ↗" data-en="view original source ↗">ver fonte original ↗</a></div>
+  </section>
+
+  <section class="about-section" id="about-section">
+    <button class="about-toggle" id="aboutToggle" type="button" aria-expanded="false" aria-controls="aboutContent"><strong data-pt="Sobre estes gráficos" data-en="About these graphs">Sobre estes gráficos</strong><span aria-hidden="true">⌄</span></button>
+    <div class="about-content" id="aboutContent" hidden>
+      <h2 data-pt="Índices climáticos" data-en="Climate indices">Índices climáticos</h2>
+      <p class="about-intro" data-pt="Um índice climático é uma medida, frequentemente numérica, usada para representar um padrão ou estado do sistema climático. O monitoramento do ENSO combina indicadores oceânicos e atmosféricos para acompanhar sua evolução." data-en="A climate index is a measure, often numerical, used to represent a pattern or state of the climate system. ENSO monitoring combines oceanic and atmospheric indicators to track its evolution.">Um índice climático é uma medida, frequentemente numérica, usada para representar um padrão ou estado do sistema climático. O monitoramento do ENSO combina indicadores oceânicos e atmosféricos para acompanhar sua evolução.</p>
+
+      <details class="about-details" open><summary data-pt="El Niño–Oscilação Sul (ENOS)" data-en="El Niño–Southern Oscillation (ENSO)">El Niño–Oscilação Sul (ENOS)</summary><div class="about-copy">
+        <p data-pt="El Niño e La Niña são as fases quente e fria do ENSO. Elas envolvem mudanças nas temperaturas da superfície do mar do Pacífico equatorial e uma resposta associada da circulação atmosférica tropical." data-en="El Niño and La Niña are the warm and cool phases of ENSO. They involve changes in equatorial Pacific sea-surface temperatures together with an associated response in tropical atmospheric circulation.">El Niño e La Niña são as fases quente e fria do ENSO. Elas envolvem mudanças nas temperaturas da superfície do mar do Pacífico equatorial e uma resposta associada da circulação atmosférica tropical.</p>
+      </div></details>
+
+      <details class="about-details"><summary data-pt="Oceanic Niño Index (ONI)" data-en="Oceanic Niño Index (ONI)">Oceanic Niño Index (ONI)</summary><div class="about-copy">
+        <p data-pt="O ONI acompanha as anomalias de temperatura da superfície do mar na região Niño 3.4 usando médias móveis de três meses. Valores positivos representam aquecimento relativo e valores negativos representam resfriamento relativo. No gráfico, as faixas de ±0,5 °C, ±1,0 °C, ±1,5 °C e ±2,0 °C ajudam a visualizar a intensidade." data-en="The ONI tracks sea-surface temperature anomalies in the Niño 3.4 region using three-month running means. Positive values represent relative warming and negative values relative cooling. In the chart, ±0.5 °C, ±1.0 °C, ±1.5 °C and ±2.0 °C bands help visualize intensity.">O ONI acompanha as anomalias de temperatura da superfície do mar na região Niño 3.4 usando médias móveis de três meses. Valores positivos representam aquecimento relativo e valores negativos representam resfriamento relativo. No gráfico, as faixas de ±0,5 °C, ±1,0 °C, ±1,5 °C e ±2,0 °C ajudam a visualizar a intensidade.</p>
+      </div></details>
+
+      <details class="about-details"><summary data-pt="Regiões Niño e índices relativos" data-en="Niño regions and relative indices">Regiões Niño e índices relativos</summary><div class="about-copy">
+        <p data-pt="As regiões Niño são áreas do Pacífico equatorial usadas para monitorar anomalias de temperatura da superfície do mar. Este painel utiliza os produtos Relative OISSTv2.1 do CPC, com período-base 1991–2020, nas escalas mensal e semanal." data-en="The Niño regions are areas of the equatorial Pacific used to monitor sea-surface temperature anomalies. This dashboard uses CPC Relative OISSTv2.1 products, with a 1991–2020 base period, at monthly and weekly scales.">As regiões Niño são áreas do Pacífico equatorial usadas para monitorar anomalias de temperatura da superfície do mar. Este painel utiliza os produtos Relative OISSTv2.1 do CPC, com período-base 1991–2020, nas escalas mensal e semanal.</p>
+        <img class="about-figure" id="aboutEnsoImage" src="imagens/explicacoes/enso-regioes-soi.png" alt="Regiões Niño, Tahiti e Darwin no Pacífico tropical"><div class="about-figure-placeholder" id="aboutImagePlaceholder" data-pt="Adicione a figura em imagens/explicacoes/enso-regioes-soi.png" data-en="Add the figure at imagens/explicacoes/enso-regioes-soi.png">Adicione a figura em imagens/explicacoes/enso-regioes-soi.png</div>
+        <div class="table-scroll"><table><thead><tr><th data-pt="Região" data-en="Region">Região</th><th data-pt="Área" data-en="Area">Área</th></tr></thead><tbody><tr><td>Niño 4</td><td>5°N–5°S · 160°E–150°W</td></tr><tr><td>Niño 3.4</td><td>5°N–5°S · 170°W–120°W</td></tr><tr><td>Niño 3</td><td>5°N–5°S · 150°W–90°W</td></tr><tr><td>Niño 1+2</td><td>0–10°S · 90°W–80°W</td></tr></tbody></table></div>
+      </div></details>
+
+      <details class="about-details"><summary>RONI — Relative Oceanic Niño Index</summary><div class="about-copy"><p data-pt="O RONI é uma versão relativa do ONI que considera a temperatura tropical de fundo. O objetivo é representar melhor o contraste do Niño 3.4 em relação ao aquecimento ou resfriamento médio dos oceanos tropicais." data-en="RONI is a relative version of the ONI that accounts for the tropical background temperature. Its purpose is to better represent the Niño 3.4 contrast relative to the mean warming or cooling of the tropical oceans.">O RONI é uma versão relativa do ONI que considera a temperatura tropical de fundo. O objetivo é representar melhor o contraste do Niño 3.4 em relação ao aquecimento ou resfriamento médio dos oceanos tropicais.</p></div></details>
+
+      <details class="about-details"><summary data-pt="Southern Oscillation Index (SOI)" data-en="Southern Oscillation Index (SOI)">Southern Oscillation Index (SOI)</summary><div class="about-copy">
+        <p data-pt="O SOI representa a componente atmosférica do ENSO a partir da diferença de pressão ao nível do mar entre Tahiti e Darwin. O CPC informa que as anomalias usadas no cálculo são desvios em relação ao período-base 1981–2010." data-en="The SOI represents the atmospheric component of ENSO using the sea-level pressure difference between Tahiti and Darwin. CPC states that the anomalies used in the calculation are departures from the 1981–2010 base period.">O SOI representa a componente atmosférica do ENSO a partir da diferença de pressão ao nível do mar entre Tahiti e Darwin. O CPC informa que as anomalias usadas no cálculo são desvios em relação ao período-base 1981–2010.</p>
+        <h3 data-pt="Como o SOI é calculado?" data-en="How is the SOI calculated?">Como o SOI é calculado?</h3>
+        <div class="equation-flow">
+          <div class="equation-card"><strong data-pt="1. Padronização de Tahiti" data-en="1. Tahiti standardization">1. Padronização de Tahiti</strong><div class="formula">T* = <span class="frac"><span>P<sub>Tahiti</sub> − P̄<sub>Tahiti</sub></span><span>σ<sub>Tahiti</sub></span></span></div></div>
+          <div class="equation-card"><strong data-pt="2. Padronização de Darwin" data-en="2. Darwin standardization">2. Padronização de Darwin</strong><div class="formula">D* = <span class="frac"><span>P<sub>Darwin</sub> − P̄<sub>Darwin</sub></span><span>σ<sub>Darwin</sub></span></span></div></div>
+          <div class="equation-card"><strong data-pt="3. Diferença padronizada" data-en="3. Standardized difference">3. Diferença padronizada</strong><div class="formula">Δ = T* − D*</div></div>
+          <div class="equation-card"><strong data-pt="4. Índice final" data-en="4. Final index">4. Índice final</strong><div class="formula">SOI = <span class="frac"><span>T* − D*</span><span>MSD</span></span></div></div>
+        </div>
+        <p data-pt="O MSD é o desvio-padrão mensal da diferença entre Tahiti e Darwin padronizados. Valores negativos persistentes são geralmente associados a El Niño, enquanto valores positivos persistentes são geralmente associados a La Niña." data-en="MSD is the monthly standard deviation of the difference between standardized Tahiti and Darwin. Persistent negative values are generally associated with El Niño, while persistent positive values are generally associated with La Niña.">O MSD é o desvio-padrão mensal da diferença entre Tahiti e Darwin padronizados. Valores negativos persistentes são geralmente associados a El Niño, enquanto valores positivos persistentes são geralmente associados a La Niña.</p>
+        <p><a href="https://www.cpc.ncep.noaa.gov/data/indices/Readme.index.shtml#SOICALC" target="_blank" rel="noopener" data-pt="Metodologia oficial do CPC ↗" data-en="Official CPC methodology ↗">Metodologia oficial do CPC ↗</a></p>
+      </div></details>
+    </div>
+  </section>
+
+  <section class="about-section" id="fontes">
+    <button class="about-toggle" id="sourcesToggle" type="button" aria-expanded="false" aria-controls="sourcesContent"><strong data-pt="Fontes de dados" data-en="Data sources">Fontes de dados</strong><span aria-hidden="true">⌄</span></button>
+    <div class="about-content" id="sourcesContent" hidden>
+      <p class="about-intro" data-pt="Conjuntos de dados, documentos e figuras oficiais utilizados no monitor." data-en="Official datasets, documents and figures used in the monitor.">Conjuntos de dados, documentos e figuras oficiais utilizados no monitor.</p>
+      <ul class="source-list">
+        <li class="source-item"><strong>ONI · NOAA/PSL</strong><p data-pt="Oceanic Niño Index utilizado no gráfico histórico, nos cartões-resumo e na identificação dos episódios ENSO." data-en="Oceanic Niño Index used in the historical chart, summary cards and ENSO episode identification.">Oceanic Niño Index utilizado no gráfico histórico, nos cartões-resumo e na identificação dos episódios ENSO.</p><a href="https://psl.noaa.gov/data/correlation/oni.data" target="_blank" rel="noopener" data-pt="Acessar dados ↗" data-en="View data ↗">Acessar dados ↗</a></li>
+        <li class="source-item"><strong data-pt="Regiões Niño · mensal" data-en="Niño regions · monthly">Regiões Niño · mensal</strong><p data-pt="Monthly Relative OISSTv2.1, período-base 1991–2020, para Niño 1+2, Niño 3, Niño 4 e Niño 3.4." data-en="Monthly Relative OISSTv2.1, 1991–2020 base period, for Niño 1+2, Niño 3, Niño 4 and Niño 3.4.">Monthly Relative OISSTv2.1, período-base 1991–2020, para Niño 1+2, Niño 3, Niño 4 e Niño 3.4.</p><a href="https://www.cpc.ncep.noaa.gov/data/indices/rel_mthsst9120.txt" target="_blank" rel="noopener" data-pt="Acessar dados ↗" data-en="View data ↗">Acessar dados ↗</a></li>
+        <li class="source-item"><strong data-pt="Regiões Niño · semanal" data-en="Niño regions · weekly">Regiões Niño · semanal</strong><p data-pt="Weekly Relative OISSTv2.1, período-base 1991–2020, para as quatro regiões Niño." data-en="Weekly Relative OISSTv2.1, 1991–2020 base period, for the four Niño regions.">Weekly Relative OISSTv2.1, período-base 1991–2020, para as quatro regiões Niño.</p><a href="https://www.cpc.ncep.noaa.gov/data/indices/rel_wksst9120.txt" target="_blank" rel="noopener" data-pt="Acessar dados ↗" data-en="View data ↗">Acessar dados ↗</a></li>
+        <li class="source-item"><strong>SOI · mensal</strong><p data-pt="Southern Oscillation Index mensal padronizado do CPC, calculado a partir da pressão ao nível do mar em Tahiti e Darwin." data-en="CPC monthly standardized Southern Oscillation Index calculated from sea-level pressure at Tahiti and Darwin.">Southern Oscillation Index mensal padronizado do CPC, calculado a partir da pressão ao nível do mar em Tahiti e Darwin.</p><a href="https://www.cpc.ncep.noaa.gov/data/indices/soi" target="_blank" rel="noopener" data-pt="Acessar dados ↗" data-en="View data ↗">Acessar dados ↗</a></li>
+        <li class="source-item"><strong data-pt="SOI · média de 3 meses" data-en="SOI · 3-month mean">SOI · média de 3 meses</strong><p data-pt="Média móvel de três meses do SOI disponibilizada pelo Climate Prediction Center." data-en="Three-month running mean of the SOI provided by the Climate Prediction Center.">Média móvel de três meses do SOI disponibilizada pelo Climate Prediction Center.</p><a href="https://www.cpc.ncep.noaa.gov/data/indices/soi.3m.txt" target="_blank" rel="noopener" data-pt="Acessar dados ↗" data-en="View data ↗">Acessar dados ↗</a></li>
+        <li class="source-item"><strong data-pt="Metodologia do SOI" data-en="SOI methodology">Metodologia do SOI</strong><p data-pt="Descrição oficial do CPC sobre o cálculo, a padronização e o período-base 1981–2010." data-en="Official CPC description of the calculation, standardization and 1981–2010 base period.">Descrição oficial do CPC sobre o cálculo, a padronização e o período-base 1981–2010.</p><a href="https://www.cpc.ncep.noaa.gov/data/indices/Readme.index.shtml#SOICALC" target="_blank" rel="noopener" data-pt="Ver metodologia ↗" data-en="View methodology ↗">Ver metodologia ↗</a></li>
+        <li class="source-item"><strong data-pt="Impactos globais do ENSO" data-en="Global ENSO impacts">Impactos globais do ENSO</strong><p data-pt="Mapas esquemáticos de impactos típicos de El Niño e La Niña em DJF e JJA. Autoria: Rebecca Lindsey; revisão: Tom Di Liberto; NOAA Climate.gov, 9 fev. 2016." data-en="Schematic maps of typical El Niño and La Niña impacts in DJF and JJA. By Rebecca Lindsey; reviewed by Tom Di Liberto; NOAA Climate.gov, 9 Feb 2016.">Mapas esquemáticos de impactos típicos de El Niño e La Niña em DJF e JJA. Autoria: Rebecca Lindsey; revisão: Tom Di Liberto; NOAA Climate.gov, 9 fev. 2016.</p><a href="https://www.climate.gov/news-features/featured-images/global-impacts-el-ni%C3%B1o-and-la-ni%C3%B1a" target="_blank" rel="noopener" data-pt="Ver fonte ↗" data-en="View source ↗">Ver fonte ↗</a></li>
+        <li class="source-item"><strong data-pt="Boletim ENSO · CPC" data-en="ENSO bulletin · CPC">Boletim ENSO · CPC</strong><p data-pt="ENSO Diagnostic Discussion do Climate Prediction Center, utilizado no alerta apresentado no topo do monitor." data-en="Climate Prediction Center ENSO Diagnostic Discussion used for the alert shown at the top of the monitor.">ENSO Diagnostic Discussion do Climate Prediction Center, utilizado no alerta apresentado no topo do monitor.</p><a href="https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml" target="_blank" rel="noopener" data-pt="Abrir boletim ↗" data-en="Open bulletin ↗">Abrir boletim ↗</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer><span data-pt="Monitor ENSO · painel independente para pesquisa, ensino e comunicação científica." data-en="ENSO Monitor · independent dashboard for research, education and science communication.">Monitor ENSO · painel independente para pesquisa, ensino e comunicação científica.</span><div class="foot-links"><a href="https://cidacs.bahia.fiocruz.br/" target="_blank" rel="noopener">CIDACS/Fiocruz Bahia ↗</a><a href="https://www.cpc.ncep.noaa.gov/" target="_blank" rel="noopener">NOAA/CPC ↗</a><a href="https://psl.noaa.gov/" target="_blank" rel="noopener">NOAA/PSL ↗</a></div></footer>
+</main>
+
+<script>
+const SOURCE_URLS={
+  oni:'https://psl.noaa.gov/data/correlation/oni.data',
+  monthlyRelative:'https://www.cpc.ncep.noaa.gov/data/indices/rel_mthsst9120.txt',
+  weeklyRelative:'https://www.cpc.ncep.noaa.gov/data/indices/rel_wksst9120.txt',
+  soi:'https://www.cpc.ncep.noaa.gov/data/indices/soi',
+  soi3m:'https://www.cpc.ncep.noaa.gov/data/indices/soi.3m.txt',
+  advisory:'https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml',
+  impacts:'https://www.climate.gov/news-features/featured-images/global-impacts-el-ni%C3%B1o-and-la-ni%C3%B1a'
+};
+const FALLBACK_ONI=[-1.53,-1.34,-1.16,-1.18,-1.07,-0.85,-0.54,-0.42,-0.39,-0.44,-0.6,-0.8,-0.82,-0.54,-0.17,0.18,0.36,0.58,0.7,0.89,0.99,1.15,1.04,0.81,0.53,0.37,0.34,0.29,0.2,0.0,-0.08,0.0,0.15,0.1,0.04,0.15,0.4,0.6,0.63,0.66,0.75,0.77,0.75,0.73,0.78,0.84,0.84,0.81,0.76,0.47,-0.05,-0.41,-0.54,-0.5,-0.64,-0.84,-0.9,-0.77,-0.73,-0.66,-0.68,-0.62,-0.69,-0.8,-0.79,-0.72,-0.68,-0.75,-1.09,-1.42,-1.67,-1.47,-1.11,-0.76,-0.63,-0.54,-0.52,-0.51,-0.57,-0.55,-0.46,-0.42,-0.43,-0.43,-0.25,0.06,0.41,0.72,0.92,1.11,1.25,1.32,1.33,1.39,1.53,1.74,1.81,1.66,1.27,0.93,0.74,0.64,0.57,0.43,0.39,0.44,0.5,0.61,0.61,0.62,0.52,0.33,0.2,-0.07,-0.18,-0.28,-0.09,-0.03,0.05,-0.04,-0.1,-0.1,-0.07,0.03,0.02,0.03,0.13,0.24,0.27,0.2,0.12,0.05,0.04,0.03,0.04,0.09,0.23,0.27,0.14,-0.13,-0.3,-0.26,-0.19,-0.16,-0.24,-0.22,-0.2,-0.26,-0.28,-0.2,-0.04,-0.07,-0.11,-0.22,-0.31,-0.43,-0.4,-0.15,0.15,0.27,0.31,0.52,0.86,1.14,1.22,1.29,1.37,1.31,1.07,0.62,0.12,-0.33,-0.58,-0.58,-0.6,-0.66,-0.76,-0.8,-0.82,-0.78,-0.59,-0.28,-0.07,0.18,0.46,0.83,1.22,1.54,1.85,1.98,1.97,1.72,1.37,1.17,0.98,0.66,0.35,0.24,0.24,0.12,-0.05,-0.1,-0.18,-0.3,-0.41,-0.48,-0.53,-0.45,-0.24,-0.0,0.05,-0.16,-0.3,-0.38,-0.34,-0.44,-0.64,-0.74,-0.62,-0.44,-0.04,0.28,0.58,0.53,0.45,0.55,0.73,0.98,1.13,1.09,0.95,0.77,0.61,0.43,0.36,0.51,0.79,0.86,0.81,0.63,0.51,0.34,0.29,0.19,0.04,-0.3,-0.63,-0.76,-0.77,-0.74,-0.86,-1.15,-1.36,-1.38,-1.12,-0.85,-0.73,-0.74,-0.8,-0.77,-0.82,-0.85,-0.96,-0.9,-0.71,-0.35,0.06,0.41,0.67,0.92,1.13,1.37,1.58,1.84,2.09,2.12,1.84,1.25,0.54,-0.1,-0.54,-0.87,-1.11,-1.28,-1.45,-1.71,-1.95,-2.03,-1.84,-1.55,-1.23,-1.03,-0.91,-0.77,-0.53,-0.37,-0.41,-0.61,-0.75,-0.64,-0.54,-0.57,-0.65,-0.73,-0.83,-0.98,-1.13,-1.2,-1.37,-1.43,-1.55,-1.65,-1.56,-1.17,-0.73,-0.47,-0.28,-0.05,0.18,0.35,0.62,0.81,0.86,0.85,0.71,0.64,0.34,0.23,0.21,0.34,0.35,0.42,0.57,0.73,0.81,0.79,0.69,0.42,0.06,-0.18,-0.31,-0.29,-0.36,-0.42,-0.42,-0.29,-0.08,0.0,0.03,0.07,0.2,0.28,0.23,0.05,0.04,0.17,0.33,0.45,0.52,0.64,0.59,0.46,0.34,0.38,0.48,0.46,0.25,0.03,-0.07,0.02,0.11,-0.01,-0.26,-0.5,-0.47,-0.37,-0.26,-0.29,-0.3,-0.25,-0.16,-0.13,-0.15,-0.08,-0.05,0.07,0.19,0.47,0.66,0.72,0.79,1.07,1.58,1.97,2.18,2.23,2.18,1.92,1.54,1.29,1.06,0.72,0.31,-0.08,-0.46,-0.81,-1.0,-0.91,-0.6,-0.42,-0.34,-0.43,-0.51,-0.45,-0.3,-0.16,-0.24,-0.56,-0.92,-1.14,-1.04,-0.85,-0.77,-0.78,-0.78,-0.63,-0.49,-0.46,-0.4,-0.35,-0.27,-0.36,-0.49,-0.47,-0.31,-0.2,-0.12,-0.04,0.22,0.44,0.71,0.94,1.14,1.22,1.23,1.19,1.06,0.95,0.97,1.22,1.51,1.7,1.65,1.48,1.25,1.11,0.81,0.54,0.14,-0.31,-0.88,-1.3,-1.3,-1.11,-1.19,-1.48,-1.8,-1.85,-1.69,-1.43,-1.08,-0.83,-0.58,-0.4,-0.31,-0.27,-0.24,-0.22,-0.16,-0.05,0.14,0.21,0.28,0.29,0.29,0.31,0.33,0.38,0.39,0.35,0.4,0.41,0.41,0.26,0.22,0.26,0.45,0.64,0.73,0.64,0.62,0.79,1.21,1.53,1.71,1.63,1.48,1.29,1.06,0.73,0.37,0.09,-0.13,-0.25,-0.28,-0.13,0.09,0.3,0.5,0.67,0.7,0.57,0.32,0.25,0.15,0.1,0.04,0.06,0.06,0.07,0.17,0.31,0.42,0.41,0.44,0.43,0.55,0.74,1.01,1.09,0.96,0.72,0.53,0.3,0.14,-0.03,-0.24,-0.54,-0.81,-0.97,-1.0,-0.98,-0.9,-0.75,-0.59,-0.39,-0.31,-0.3,-0.27,-0.32,-0.35,-0.4,-0.45,-0.49,-0.5,-0.36,-0.1,0.28,0.75,1.22,1.6,1.9,2.14,2.33,2.4,2.39,2.24,1.93,1.44,0.99,0.45,-0.13,-0.78,-1.12,-1.31,-1.35,-1.48,-1.57,-1.55,-1.3,-1.07,-0.98,-1.02,-1.04,-1.1,-1.11,-1.16,-1.26,-1.46,-1.65,-1.66,-1.41,-1.07,-0.81,-0.71,-0.64,-0.55,-0.51,-0.55,-0.63,-0.75,-0.74,-0.68,-0.52,-0.44,-0.34,-0.25,-0.12,-0.08,-0.13,-0.19,-0.29,-0.35,-0.31,-0.15,0.03,0.09,0.2,0.43,0.65,0.79,0.86,1.01,1.21,1.31,1.14,0.92,0.63,0.38,-0.04,-0.26,-0.16,0.08,0.21,0.26,0.29,0.35,0.35,0.37,0.31,0.23,0.17,0.17,0.28,0.47,0.64,0.7,0.67,0.66,0.69,0.64,0.58,0.45,0.43,0.29,0.11,-0.06,-0.14,-0.11,-0.29,-0.57,-0.84,-0.85,-0.77,-0.57,-0.37,-0.14,-0.03,0.1,0.3,0.54,0.77,0.94,0.94,0.66,0.22,-0.12,-0.32,-0.38,-0.47,-0.56,-0.81,-1.07,-1.34,-1.5,-1.6,-1.64,-1.52,-1.29,-1.01,-0.84,-0.61,-0.37,-0.23,-0.24,-0.35,-0.55,-0.73,-0.85,-0.79,-0.61,-0.33,0.01,0.28,0.45,0.58,0.71,1.01,1.36,1.56,1.5,1.22,0.84,0.35,-0.17,-0.66,-1.05,-1.35,-1.56,-1.64,-1.64,-1.54,-1.31,-1.04,-0.8,-0.62,-0.46,-0.37,-0.43,-0.58,-0.79,-0.96,-1.02,-0.92,-0.72,-0.57,-0.46,-0.36,-0.17,0.06,0.3,0.41,0.41,0.31,0.13,-0.1,-0.29,-0.29,-0.21,-0.19,-0.27,-0.34,-0.35,-0.28,-0.21,-0.13,-0.1,-0.15,-0.28,-0.32,-0.14,0.15,0.31,0.23,0.1,0.11,0.28,0.54,0.71,0.77,0.69,0.61,0.65,0.81,1.02,1.25,1.57,1.91,2.21,2.47,2.64,2.75,2.63,2.28,1.71,1.05,0.49,0.0,-0.31,-0.5,-0.58,-0.64,-0.6,-0.45,-0.19,-0.02,0.18,0.31,0.4,0.39,0.19,-0.07,-0.34,-0.6,-0.77,-0.86,-0.77,-0.71,-0.57,-0.39,-0.13,0.06,0.14,0.27,0.53,0.81,0.97,0.92,0.89,0.86,0.84,0.77,0.64,0.52,0.33,0.19,0.23,0.39,0.58,0.66,0.64,0.63,0.53,0.3,0.01,-0.23,-0.36,-0.53,-0.85,-1.12,-1.2,-1.08,-0.91,-0.79,-0.71,-0.55,-0.39,-0.3,-0.35,-0.45,-0.63,-0.76,-0.91,-0.87,-0.82,-0.79,-0.86,-0.95,-0.9,-0.78,-0.76,-0.87,-0.97,-0.94,-0.85,-0.71,-0.54,-0.29,-0.02,0.27,0.57,0.84,1.12,1.37,1.6,1.83,1.99,2.06,1.92,1.62,1.26,0.82,0.49,0.22,0.08,-0.07,-0.17,-0.21,-0.3,-0.42,-0.45,-0.24,-0.06,0.02,-0.02,-0.04,-0.14,-0.28,-0.4,-0.51,-0.55,-0.54,-0.37,-0.14,0.13,0.51,0.98,1.4];
+const MONTHS_PT=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const MONTHS_EN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+let currentLang=localStorage.getItem('enso-lang')==='en'?'en':'pt';
+function tx(pt,en){return currentLang==='en'?en:pt}
+function months(){return currentLang==='en'?MONTHS_EN:MONTHS_PT}
+const MONTHS=MONTHS_PT;
+const SEASONS=['DJF','JFM','FMA','MAM','AMJ','MJJ','JJA','JAS','ASO','SON','OND','NDJ'];
+const WEEK_MONTHS={JAN:1,FEB:2,MAR:3,APR:4,MAY:5,JUN:6,JUL:7,AUG:8,SEP:9,OCT:10,NOV:11,DEC:12};
+const REGION_META={
+  n12:{name:'Niño 1+2',desc:'0–10°S · 90°W–80°W',monthlyKey:'n12',weeklyKey:'n12',image:'imagens/regioes-nino/nino12.png'},
+  n3:{name:'Niño 3',desc:'5°N–5°S · 150°W–90°W',monthlyKey:'n3',weeklyKey:'n3',image:'imagens/regioes-nino/nino3.png'},
+  n34:{name:'Niño 3.4',desc:'5°N–5°S · 170°W–120°W',monthlyKey:'n34',weeklyKey:'n34',image:'imagens/regioes-nino/nino34.png'},
+  n4:{name:'Niño 4',desc:'5°N–5°S · 160°E–150°W',monthlyKey:'n4',weeklyKey:'n4',image:'imagens/regioes-nino/nino4.png'}
+};
+const FALLBACK_SOI_STANDARDIZED_TEXT=`1951 1.5 0.9 -0.1 -0.3 -0.7 0.2 -1.0 -0.2 -1.1 -1.0 -0.8 -0.7
+1952 -0.9 -0.6 0.5 -0.2 0.8 0.7 0.5 0.1 -0.2 0.4 0.0 -1.2
+1953 0.3 -0.5 -0.2 0.2 -1.7 0.1 -0.0 -1.2 -1.2 0.1 -0.3 -0.5
+1954 0.7 -0.3 0.3 0.6 0.5 0.1 0.4 1.1 0.2 0.3 0.1 1.4
+1955 -0.5 1.9 0.6 -0.1 1.0 1.3 1.6 1.5 1.3 1.5 1.2 1.0
+1956 1.3 1.6 1.3 0.9 1.4 1.1 1.1 1.2 0.1 1.8 0.2 1.1
+1957 0.6 -0.1 0.2 0.2 -0.7 0.2 0.2 -0.5 -0.9 0.0 -1.0 -0.3
+1958 -1.9 -0.5 0.3 0.4 -0.5 0.3 0.4 0.9 -0.3 0.1 -0.4 -0.6
+1959 -0.9 -1.4 1.3 0.4 0.5 -0.1 -0.3 -0.1 0.0 0.5 0.9 0.9
+1960 0.1 0.1 1.0 0.8 0.5 0.1 0.5 0.8 0.7 0.1 0.5 0.8
+1961 -0.3 0.9 -1.8 0.8 0.3 0.1 0.2 0.2 0.1 -0.3 0.5 1.5
+1962 2.0 -0.3 0.1 0.2 1.1 0.7 0.1 0.6 0.4 1.0 0.3 0.2
+1963 1.0 0.6 1.1 0.8 0.4 -0.5 -0.1 0.0 -0.6 -1.2 -0.8 -1.2
+1964 -0.4 0.0 1.1 1.1 0.2 0.8 0.6 1.5 1.3 1.3 0.2 -0.3
+1965 -0.4 0.4 0.8 -0.5 0.2 -0.6 -1.8 -0.7 -1.3 -0.9 -1.5 0.2
+1966 -1.3 -0.2 -0.9 -0.2 -0.4 0.3 0.1 0.6 -0.2 -0.1 -0.0 -0.3
+1967 1.7 1.7 1.2 -0.0 -0.0 0.6 0.2 0.7 0.5 0.1 -0.4 -0.6
+1968 0.5 1.3 0.1 0.0 1.2 1.1 0.7 0.3 -0.3 -0.1 -0.3 0.2
+1969 -1.5 -0.5 0.4 -0.4 -0.2 0.2 -0.5 -0.1 -1.0 -0.9 -0.1 0.4
+1970 -1.1 -1.0 0.6 -0.1 0.4 1.0 -0.4 0.6 1.2 1.0 1.6 1.9
+1971 0.4 2.0 2.3 1.7 0.9 0.4 0.2 1.5 1.4 1.7 0.5 0.3
+1972 0.5 1.1 0.6 -0.1 -1.6 -0.5 -1.4 -0.5 -1.4 -0.9 -0.3 -1.3
+1973 -0.3 -1.4 0.7 0.1 0.4 1.1 0.6 1.3 1.2 0.8 2.6 1.8
+1974 2.4 2.1 2.4 0.9 1.0 0.4 1.1 0.8 1.1 0.9 -0.1 0.2
+1975 -0.5 0.8 1.6 1.2 0.6 1.3 1.9 2.0 2.1 1.7 1.2 2.1
+1976 1.4 1.7 1.7 0.3 0.4 0.3 -0.9 -0.8 -1.1 0.4 0.7 -0.3
+1977 -0.4 1.2 -0.5 -0.4 -0.5 -0.9 -1.1 -0.8 -0.8 -1.0 -1.3 -1.1
+1978 -0.3 -2.7 -0.2 -0.3 1.4 0.7 0.6 0.4 0.1 -0.4 -0.0 -0.1
+1979 -0.4 1.0 0.1 -0.1 0.5 0.6 1.3 -0.2 0.1 -0.1 -0.4 -0.7
+1980 0.4 0.3 -0.4 -0.6 -0.0 -0.0 -0.0 0.4 -0.5 0.0 -0.3 -0.1
+1981 0.4 -0.2 -1.3 -0.1 0.8 1.2 0.8 0.7 0.3 -0.4 0.2 0.5
+1982 1.2 0.3 0.6 0.1 -0.3 -1.0 -1.5 -1.7 -1.7 -1.7 -2.6 -2.2
+1983 -3.5 -3.6 -2.4 -0.9 0.6 0.0 -0.6 0.1 0.9 0.4 -0.1 0.0
+1984 0.2 0.9 -0.2 0.3 0.2 -0.3 0.2 0.4 0.1 -0.3 0.3 -0.1
+1985 -0.3 1.2 0.8 1.2 0.4 -0.4 -0.1 1.0 0.0 -0.4 -0.2 0.2
+1986 1.0 -1.0 0.5 0.3 -0.2 1.0 0.3 -0.4 -0.5 0.6 -1.2 -1.4
+1987 -0.7 -1.2 -1.3 -1.4 -1.3 -1.1 -1.4 -0.9 -1.0 -0.4 -0.0 -0.5
+1988 -0.1 -0.4 0.6 0.1 0.9 0.1 1.0 1.5 1.8 1.4 1.7 1.2
+1989 1.5 1.2 1.1 1.6 1.2 0.7 0.9 -0.3 0.5 0.8 -0.2 -0.5
+1990 -0.1 -1.8 -0.4 0.2 1.2 0.3 0.5 -0.2 -0.7 0.3 -0.5 -0.2
+1991 0.6 0.3 -0.7 -0.6 -1.0 -0.1 0.0 -0.4 -1.5 -1.0 -0.7 -1.8
+1992 -2.9 -0.9 -2.0 -1.0 0.3 -0.6 -0.6 0.4 0.1 -1.4 -0.7 -0.6
+1993 -0.9 -0.7 -0.5 -1.2 -0.3 -0.8 -0.8 -0.9 -0.7 -1.1 -0.1 0.2
+1994 -0.1 0.3 -0.7 -1.3 -0.7 -0.4 -1.3 -1.2 -1.6 -1.1 -0.6 -1.2
+1995 -0.4 -0.1 0.8 -0.7 -0.4 0.1 0.4 0.3 0.3 0.0 0.0 -0.5
+1996 1.0 0.3 1.1 0.8 0.3 1.2 0.7 0.7 0.6 0.6 -0.1 0.9
+1997 0.5 1.7 -0.4 -0.6 -1.3 -1.4 -0.8 -1.4 -1.4 -1.5 -1.2 -1.0
+1998 -2.7 -2.0 -2.4 -1.4 0.3 1.0 1.2 1.2 1.0 1.1 1.0 1.4
+1999 1.8 1.0 1.3 1.4 0.2 0.3 0.5 0.4 -0.1 1.0 1.0 1.4
+2000 0.7 1.7 1.3 1.2 0.4 -0.2 -0.2 0.7 0.9 1.1 1.8 0.8
+2001 1.0 1.7 0.9 0.2 -0.5 0.3 -0.2 -0.4 0.2 -0.0 0.7 -0.8
+2002 0.4 1.1 -0.2 -0.1 -0.8 -0.2 -0.5 -1.0 -0.6 -0.4 -0.5 -1.1
+2003 -0.2 -0.7 -0.3 -0.1 -0.3 -0.6 0.3 0.1 -0.1 0.0 -0.3 1.1
+2004 -1.3 1.2 0.4 -0.9 1.0 -0.8 -0.5 -0.3 -0.3 -0.1 -0.7 -0.8
+2005 0.3 -3.1 0.3 -0.6 -0.8 0.4 0.2 -0.3 0.4 1.2 -0.2 -0.0
+2006 1.7 0.1 1.8 1.1 -0.5 -0.2 -0.6 -1.0 -0.6 -1.3 0.1 -0.3
+2007 -0.8 -0.1 0.2 -0.1 -0.1 0.5 -0.3 0.4 0.2 0.7 0.9 1.7
+2008 1.8 2.6 1.4 0.7 -0.1 0.6 0.3 1.0 1.2 1.3 1.3 1.4
+2009 1.1 1.9 0.4 0.8 -0.1 0.1 0.2 -0.2 0.3 -1.2 -0.6 -0.7
+2010 -1.1 -1.5 -0.7 1.2 0.9 0.4 1.8 1.8 2.2 1.7 1.3 2.9
+2011 2.3 2.7 2.5 1.9 0.4 0.2 1.0 0.4 1.0 0.8 1.1 2.5
+2012 1.1 0.5 0.7 -0.3 0.0 -0.4 -0.0 -0.2 0.2 0.3 0.3 -0.6
+2013 -0.1 -0.2 1.5 0.2 0.8 1.2 0.8 0.2 0.3 -0.1 0.7 0.1
+2014 1.4 0.1 -0.9 0.8 0.5 0.2 -0.2 -0.7 -0.7 -0.6 -0.9 -0.6
+2015 -0.8 0.2 -0.7 -0.0 -0.7 -0.6 -1.1 -1.4 -1.6 -1.7 -0.5 -0.6
+2016 -2.2 -2.0 -0.1 -1.2 0.4 0.6 0.4 0.7 1.2 -0.3 -0.1 0.3
+2017 0.2 -0.1 0.9 -0.2 0.3 -0.4 0.8 0.5 0.6 0.9 0.9 -0.1
+2018 1.1 -0.5 1.5 0.5 0.4 -0.1 0.2 -0.3 -0.9 0.4 -0.1 1.0
+2019 -0.0 -1.4 -0.3 0.1 -0.4 -0.5 -0.4 -0.1 -1.2 -0.4 -0.8 -0.6
+2020 0.2 -0.1 -0.1 0.2 0.4 -0.4 0.4 1.1 0.9 0.5 0.7 1.8
+2021 1.9 1.5 0.4 0.3 0.5 0.4 1.4 0.6 0.8 0.7 1.0 1.5
+2022 0.5 1.1 1.8 1.7 1.4 1.7 0.8 1.0 1.6 1.7 0.3 2.1
+2023 1.4 1.4 0.2 0.2 -1.0 0.3 -0.3 -0.8 -1.3 -0.5 -0.8 -0.2
+2024 0.5 -1.4 0.4 -0.2 0.5 0.0 -0.7 0.9 -0.1 0.5 0.5 1.2
+2025 0.2 0.5 1.7 0.5 0.4 0.3 0.6 0.4 0.0 1.1 1.1 -0.0
+2026 1.1 1.4 1.2 -0.6 -0.9 -1.4 -2.4 -999.9 -999.9 -999.9 -999.9 -999.9`;
+
+let oniSeries=[], monthlyRelative=[], weeklyRelative=[], soiMonthly=[], soi3m=[], cpcAdvisory=null;
+let loadInProgress=false;
+const AUTO_REFRESH_MS=6*60*60*1000;
+let selectedRegion='n34', selectedFrequency='monthly', selectedSoiFrequency='monthly';
+let oniView={zoom:1,center:.5}, regionView={zoom:1,center:.5}, soiView={zoom:1,center:.5};
+let panState={oni:null,region:null,soi:null};
+
+
+
+const IMPACT_IMAGES={
+  'elnino-djf':'https://www.climate.gov/sites/default/files/2021-10/ElNinoDJF.jpg',
+  'elnino-jja':'https://www.climate.gov/sites/default/files/2021-10/ElNinoJJA.jpg',
+  'lanina-djf':'https://www.climate.gov/sites/default/files/2021-10/LaNinaDJF.jpg',
+  'lanina-jja':'https://www.climate.gov/sites/default/files/2021-10/LaNinaJJA.jpg'
+};
+let selectedImpactPhase='elnino', selectedImpactSeason='djf';
+function impactKey(){return `${selectedImpactPhase}-${selectedImpactSeason}`}
+function impactPhaseLabel(){return selectedImpactPhase==='elnino'?'El Niño':'La Niña'}
+function impactSeasonLabel(){return selectedImpactSeason.toUpperCase()}
+function updateImpactFigure(){
+  const key=impactKey(),url=IMPACT_IMAGES[key],phase=impactPhaseLabel(),season=impactSeasonLabel();
+  const img=document.getElementById('impactImage'),link=document.getElementById('impactImageLink'),cap=document.getElementById('impactFigureCaption');
+  if(!img||!link||!cap)return;
+  img.src=url;link.href=url;
+  img.alt=currentLang==='en'?`Typical global ${phase} impacts in ${season}`:`Impactos globais típicos de ${phase} em ${season}`;
+  cap.innerHTML=currentLang==='en'?`<strong>${phase} · ${season}</strong> — typical global temperature and precipitation patterns. Areas represent broad climatological relationships, not a forecast for a specific event.`:`<strong>${phase} · ${season}</strong> — padrões globais típicos de temperatura e precipitação. As áreas representam relações climatológicas gerais e não uma previsão para um evento específico.`;
+  document.querySelectorAll('[data-impact-phase]').forEach(b=>b.classList.toggle('active',b.dataset.impactPhase===selectedImpactPhase));
+  document.querySelectorAll('[data-impact-season]').forEach(b=>b.classList.toggle('active',b.dataset.impactSeason===selectedImpactSeason));
+}
+document.querySelectorAll('[data-impact-phase]').forEach(b=>b.addEventListener('click',()=>{selectedImpactPhase=b.dataset.impactPhase;updateImpactFigure()}));
+document.querySelectorAll('[data-impact-season]').forEach(b=>b.addEventListener('click',()=>{selectedImpactSeason=b.dataset.impactSeason;updateImpactFigure()}));
+
+function applyLanguage(){
+  document.documentElement.lang=currentLang==='en'?'en':'pt-BR';
+  document.querySelectorAll('[data-pt][data-en]').forEach(el=>{el.textContent=currentLang==='en'?el.dataset.en:el.dataset.pt});
+  document.getElementById('langPt').classList.toggle('active',currentLang==='pt');
+  document.getElementById('langEn').classList.toggle('active',currentLang==='en');
+  document.getElementById('oniFilter').placeholder=tx('Filtrar por ano ou período…','Filter by year or period…');
+  document.getElementById('regionFilter').placeholder=tx('Filtrar por ano ou data…','Filter by year or date…');
+  document.getElementById('soiFilter').placeholder=tx('Filtrar por ano…','Filter by year…');
+  updateCpcAlert();
+  updateThemeButton();
+  if(oniSeries.length){updateSummary();renderOniRaw(document.getElementById('oniFilter').value.trim().toLowerCase());renderEpisodes();drawOniChart()}
+  if(monthlyRelative.length||weeklyRelative.length){updateN34Status();renderRegion()}
+  if(soiMonthly.length||soi3m.length){updateSoiStatus();renderSoi();}
+  updateImpactFigure();
+}
+document.getElementById('langPt').addEventListener('click',()=>{currentLang='pt';localStorage.setItem('enso-lang','pt');applyLanguage()});
+document.getElementById('langEn').addEventListener('click',()=>{currentLang='en';localStorage.setItem('enso-lang','en');applyLanguage()});
+
+const savedTheme=localStorage.getItem('enso-theme');
+if(savedTheme==='dark'||savedTheme==='light')document.documentElement.dataset.theme=savedTheme;
+else if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.dataset.theme='dark';
+function updateThemeButton(){const dark=document.documentElement.dataset.theme==='dark';document.getElementById('themeIcon').textContent=dark?'☀':'☾';document.getElementById('themeLabel').textContent=dark?tx('Modo claro','Light mode'):tx('Modo escuro','Dark mode')}
+updateThemeButton();applyLanguage();
+document.getElementById('themeToggle').addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('enso-theme',next);updateThemeButton();if(oniSeries.length)drawOniChart();renderRegion();renderSoi()});
+
+function classify(v){const a=Math.abs(v);if(a<.5)return{label:tx('Neutro','Neutral'),cls:'neutral'};const side=v>0?'El Niño':'La Niña';let level=tx('Fraco','Weak');if(a>=2)level=tx('Muito Forte','Very Strong');else if(a>=1.5)level=tx('Forte','Strong');else if(a>=1)level=tx('Moderado','Moderate');return{label:`${side} ${level}`,cls:v>0?'warm':'cold'}}
+function fmt(v,d=2){const n=Number(v).toFixed(d);return `${v>0?'+':''}${currentLang==='pt'?n.replace('.',','):n}°C`}
+function periodLabel(year,monthIndex){return `${SEASONS[monthIndex]} ${year}`}
+function monthLabel(year,month){return `${months()[month-1]} ${year}`}
+function isoDate(y,m,d){return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`}
+function parseOniText(text){const rows=[];text.split(/\r?\n/).forEach(line=>{const p=line.trim().split(/\s+/);if(p.length>=13&&/^\d{4}$/.test(p[0])){const y=+p[0];for(let m=0;m<12;m++){const v=+p[m+1];if(Number.isFinite(v)&&v>-90)rows.push({year:y,monthIndex:m,value:v,period:periodLabel(y,m)})}}});return rows}
+function fallbackOni(){return FALLBACK_ONI.map((value,i)=>{const year=1950+Math.floor(i/12),monthIndex=i%12;return{year,monthIndex,value,period:periodLabel(year,monthIndex)}})}
+function parseMonthlyRelative(text){const rows=[];text.split(/\r?\n/).forEach(line=>{const p=line.trim().split(/\s+/);if(p.length>=6&&/^\d{4}$/.test(p[0])){const year=+p[0],month=+p[1],n12=+p[2],n3=+p[3],n4=+p[4],n34=+p[5];if([n12,n3,n4,n34].every(Number.isFinite))rows.push({year,month,date:isoDate(year,month,1),label:monthLabel(year,month),n12,n3,n4,n34})}});return rows}
+function parseWeeklyRelative(text){const rows=[];text.split(/\r?\n/).forEach(line=>{const p=line.trim().split(/\s+/);if(p.length>=5){const m=p[0].match(/^(\d{2})([A-Z]{3})(\d{4})$/);if(m){const day=+m[1],month=WEEK_MONTHS[m[2]],year=+m[3],n12=+p[1],n3=+p[2],n34=+p[3],n4=+p[4];if(month&&[n12,n3,n34,n4].every(Number.isFinite))rows.push({year,month,day,date:isoDate(year,month,day),label:`${String(day).padStart(2,'0')} ${MONTHS[month-1]} ${year}`,n12,n3,n34,n4})}}});return rows}
+function parseSoiBlock(text,standardizedOnly=false){
+  let src=text;
+  if(standardizedOnly){const idx=src.toUpperCase().indexOf('STANDARDIZED');if(idx>=0)src=src.slice(idx)}
+  const rows=[];
+  src.split(/\r?\n/).forEach(line=>{
+    const nums=line.match(/-?\d+(?:\.\d+)?/g);if(!nums||nums.length<13)return;
+    const year=+nums[0];if(year<1900||year>2100)return;
+    nums.slice(1,13).forEach((raw,i)=>{const value=+raw;if(Number.isFinite(value)&&value>-900)rows.push({year,month:i+1,date:isoDate(year,i+1,1),value})});
+  });
+  return rows;
+}
+function fallbackSoiMonthly(){return parseSoiBlock(FALLBACK_SOI_STANDARDIZED_TEXT,false)}
+function makeSoi3m(monthly){
+  const out=[];
+  for(let i=1;i<monthly.length-1;i++){
+    const a=monthly[i-1],b=monthly[i],c=monthly[i+1];
+    const prevDate=new Date(Date.UTC(a.year,a.month-1,1)),curDate=new Date(Date.UTC(b.year,b.month-1,1)),nextDate=new Date(Date.UTC(c.year,c.month-1,1));
+    const oneMonth=31*24*3600*1000;
+    if(curDate-prevDate>oneMonth*1.1||nextDate-curDate>oneMonth*1.1)continue;
+    const value=Math.round(((a.value+b.value+c.value)/3)*10)/10;
+    out.push({year:b.year,month:b.month,date:b.date,value});
+  }
+  return out;
+}
+
+async function fetchOnce(url){const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),12000);try{const r=await fetch(url,{cache:'no-store',signal:controller.signal,mode:'cors'});if(!r.ok)throw new Error(`HTTP ${r.status}`);return await r.text()}finally{clearTimeout(timer)}}
+async function fetchText(url){
+  const attempts=[url,`https://r.jina.ai/${url}`];
+  let lastError;
+  for(const candidate of attempts){try{return await fetchOnce(candidate)}catch(e){lastError=e}}
+  throw lastError||new Error('Falha ao carregar dados');
+}
+
+function plainTextFromSource(text){
+  const box=document.createElement('textarea');
+  box.innerHTML=String(text||'').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1').replace(/<br\s*\/?>/gi,'\n').replace(/<\/p>/gi,'\n');
+  return box.value.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+}
+function firstSentence(text){
+  const clean=String(text||'').replace(/\s+/g,' ').trim();
+  if(!clean)return null;
+  try{
+    if(typeof Intl!=='undefined'&&Intl.Segmenter){
+      const seg=new Intl.Segmenter('en',{granularity:'sentence'});
+      const first=[...seg.segment(clean)][0]?.segment?.trim();
+      if(first)return first;
+    }
+  }catch(_e){}
+  const m=clean.match(/^(.+?[.!?])(?:\s+[A-Z]|$)/);
+  return (m?m[1]:clean).trim();
+}
+function extractSynopsis(text){
+  const raw=String(text||'');
+  try{
+    if(/<[^>]+>/.test(raw)){
+      const doc=new DOMParser().parseFromString(raw,'text/html');
+      const label=[...doc.querySelectorAll('strong,b')].find(el=>/^Synopsis\s*:?$/i.test(el.textContent.trim()));
+      if(label){
+        const parent=label.parentElement;
+        const candidate=(parent?.textContent||'').replace(/^\s*Synopsis\s*:\s*/i,'').trim();
+        const sentence=firstSentence(candidate);
+        if(sentence)return sentence;
+      }
+    }
+  }catch(_e){}
+  const plain=raw.replace(/\[([^\]]+)\]\([^)]+\)/g,'$1').replace(/<br\s*\/?>/gi,'\n').replace(/<\/p>/gi,'\n').replace(/<[^>]*>/g,' ');
+  const idx=plain.search(/Synopsis\s*:/i);
+  if(idx<0)return null;
+  return firstSentence(plain.slice(idx).replace(/^.*?Synopsis\s*:\s*/i,''));
+}
+function parseCpcAdvisory(text){
+  const plain=plainTextFromSource(text);
+  const sm=plain.match(/ENSO Alert System Status:\s*(.+?)(?=\s+Synopsis:|\s+Synopsis\b|$)/i);
+  const dm=plain.match(/\b(\d{1,2})\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})\b/i);
+  const synopsis=extractSynopsis(text);
+  return {status:sm?sm[1].trim():null,date:dm?{day:+dm[1],month:dm[2],year:+dm[3]}:null,synopsis};
+}
+function cpcMonthYearLabel(d){
+  if(!d)return currentLang==='en'?'latest':'mais recente';
+  const monthsEn=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const monthsPt=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  const idx=monthsEn.map(x=>x.toLowerCase()).indexOf(String(d.month).toLowerCase());
+  if(idx<0)return `${d.month} ${d.year}`;
+  return `${(currentLang==='en'?monthsEn:monthsPt)[idx]} ${d.year}`;
+}
+function synopsisForDisplay(synopsis){
+  if(!synopsis)return currentLang==='en'?'El Niño is strengthening, with a greater than 90% chance of a very strong event during the Northern Hemisphere fall and winter 2026-27.':'El Niño está se fortalecendo, com mais de 90% de chance de um evento muito forte (Very Strong) durante o outono e o inverno de 2026–27 no Hemisfério Norte.';
+  if(currentLang==='en')return synopsis;
+  const current='El Niño is strengthening, with a greater than 90% chance of a very strong event during the Northern Hemisphere fall and winter 2026-27.';
+  if(synopsis.trim()===current)return 'El Niño está se fortalecendo, com mais de 90% de chance de um evento muito forte (Very Strong) durante o outono e o inverno de 2026–27 no Hemisfério Norte.';
+  return synopsis;
+}
+function updateCpcAlert(){
+  const title=document.getElementById('alertTitle'),body=document.getElementById('alertText'),meta=document.getElementById('alertMeta');
+  if(!title||!body||!meta)return;
+  const d=cpcAdvisory?.date||{day:13,month:'August',year:2026};
+  const my=cpcMonthYearLabel(d);
+  title.textContent=currentLang==='en'?`CPC ALERT — ${my} synopsis`:`ALERTA CPC — Síntese de ${my}`;
+  body.textContent=synopsisForDisplay(cpcAdvisory?.synopsis||null);
+  meta.innerHTML=currentLang==='en'?`For more information, read the <a href="${SOURCE_URLS.advisory}" target="_blank" rel="noopener"><strong>FULL ENSO DIAGNOSTIC DISCUSSION ↗</strong></a>`:`Para mais informações, acesse a <a href="${SOURCE_URLS.advisory}" target="_blank" rel="noopener"><strong>discussão diagnóstica na íntegra ↗</strong></a>`;
+}
+function cpcStatusMain(status){
+  if(!status)return null;
+  if(currentLang==='en')return status;
+  const x=status.toLowerCase();
+  if(x.includes('el niño advisory'))return 'El Niño';
+  if(x.includes('la niña advisory'))return 'La Niña';
+  if(x.includes('el niño watch'))return 'Vigilância de El Niño';
+  if(x.includes('la niña watch'))return 'Vigilância de La Niña';
+  if(x.includes('final advisory'))return 'Aviso final';
+  return status.replace(/Advisory/gi,'Aviso').replace(/Watch/gi,'Vigilância');
+}
+function cpcStatusClass(status){
+  const x=(status||'').toLowerCase();
+  return x.includes('el niño')?'warm':x.includes('la niña')?'cold':'neutral';
+}
+function cpcDateLabel(d){
+  if(!d)return '';
+  const en=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const pt=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  const idx=['january','february','march','april','may','june','july','august','september','october','november','december'].indexOf(String(d.month).toLowerCase());
+  return idx<0?`${d.day} ${d.month} ${d.year}`:`${d.day} ${(currentLang==='en'?en:pt)[idx]} ${d.year}`;
+}
+async function loadData(){
+  if(loadInProgress)return;
+  loadInProgress=true;
+  try{
+    try{const text=await fetchText(SOURCE_URLS.oni);const parsed=parseOniText(text);oniSeries=parsed.length>500?parsed:fallbackOni()}catch(e){oniSeries=fallbackOni()}
+    renderOniRaw();renderEpisodes();drawOniChart();
+
+    const [m,w,sm,s3,adv]=await Promise.allSettled([
+      fetchText(SOURCE_URLS.monthlyRelative),
+      fetchText(SOURCE_URLS.weeklyRelative),
+      fetchText(SOURCE_URLS.soi),
+      fetchText(SOURCE_URLS.soi3m),
+      fetchText(SOURCE_URLS.advisory)
+    ]);
+    if(m.status==='fulfilled'){const parsed=parseMonthlyRelative(m.value);if(parsed.length)monthlyRelative=parsed}
+    if(w.status==='fulfilled'){const parsed=parseWeeklyRelative(w.value);if(parsed.length)weeklyRelative=parsed}
+    if(sm.status==='fulfilled'){const parsed=parseSoiBlock(sm.value,true);if(parsed.length)soiMonthly=parsed}
+    if(!soiMonthly.length)soiMonthly=fallbackSoiMonthly();
+    if(s3.status==='fulfilled'){const parsed=parseSoiBlock(s3.value,false);if(parsed.length)soi3m=parsed}
+    if(!soi3m.length)soi3m=makeSoi3m(soiMonthly);
+    if(adv.status==='fulfilled'){
+      const parsed=parseCpcAdvisory(adv.value);
+      if(parsed.status||parsed.synopsis||parsed.date)cpcAdvisory=parsed;
+    }
+
+    updateCpcAlert();updateSummary();updateN34Status();updateSoiStatus();renderRegion();renderSoi();
+  } finally {
+    loadInProgress=false;
+  }
+}
+function updateSummary(){
+  if(!oniSeries.length)return;
+  const last=oniSeries.at(-1),c=classify(last.value),sc=document.getElementById('statusClass');
+  if(cpcAdvisory&&cpcAdvisory.status){
+    sc.textContent=cpcStatusMain(cpcAdvisory.status);
+    sc.className=`value ${cpcStatusClass(cpcAdvisory.status)}`;
+    const date=cpcDateLabel(cpcAdvisory.date);
+    document.getElementById('statusClassSub').textContent=`CPC · ${cpcAdvisory.status}${date?` · ${date}`:''}`;
+  }else{
+    sc.textContent=c.label;
+    sc.className=`value ${c.cls}`;
+    document.getElementById('statusClassSub').textContent=`${tx('Estimativa pelo ONI','ONI-based estimate')} · ${last.period}`;
+  }
+  const so=document.getElementById('statusOni');
+  so.textContent=fmt(last.value);so.className=`value ${c.cls}`;
+  document.getElementById('statusOniSub').textContent=last.period;
+}
+function updateN34Status(){const data=monthlyRelative;if(!data.length)return;const d=data.at(-1),v=d.n34,c=v>=.5?'warm':v<=-.5?'cold':'neutral',el=document.getElementById('statusN34');el.textContent=fmt(v);el.className=`value ${c}`;document.getElementById('statusN34Sub').textContent=`${d.label} · ${tx('relativo','relative')}`}
+function updateSoiStatus(){const data=soi3m.length?soi3m:soiMonthly;if(!data.length)return;const d=data.at(-1),v=d.value,el=document.getElementById('statusSoi');el.textContent=`${v>0?'+':''}${currentLang==='pt'?v.toFixed(1).replace('.',','):v.toFixed(1)}`;el.className=`value ${v<0?'warm':v>0?'cold':'neutral'}`;const direction=v<0?tx('Sinal atmosférico associado ao El Niño','Atmospheric signal associated with El Niño'):v>0?tx('Sinal atmosférico associado à La Niña','Atmospheric signal associated with La Niña'):tx('Sinal atmosférico próximo da neutralidade','Atmospheric signal near neutral');document.getElementById('statusSoiSub').textContent=`${direction} · ${months()[d.month-1]} ${d.year}`}
+function renderOniRaw(filter=''){const rows=oniSeries.filter(d=>!filter||String(d.year).includes(filter)||d.period.toLowerCase().includes(filter));document.getElementById('oniCount').textContent=`${rows.length} ${tx('registros','records')}`;document.getElementById('oniRawBody').innerHTML=rows.map(d=>{const c=classify(d.value);return `<tr><td>${d.year}</td><td>${months()[d.monthIndex]}</td><td>${d.period}</td><td class="${c.cls}">${fmt(d.value)}</td><td>${c.label}</td></tr>`}).join('')}
+document.getElementById('oniFilter').addEventListener('input',e=>renderOniRaw(e.target.value.trim().toLowerCase()));
+
+function visibleSlice(data,view){if(!data.length)return{slice:[],start:0,end:0};const n=data.length,visible=Math.max(12,Math.round(n/view.zoom)),centerIndex=view.center*(n-1);let start=Math.round(centerIndex-visible/2);start=Math.max(0,Math.min(n-visible,start));const end=Math.min(n,start+visible);return{slice:data.slice(start,end),start,end}}
+function setZoom(which,factor){const view=which==='oni'?oniView:which==='region'?regionView:soiView;view.zoom=Math.max(1,Math.min(12,view.zoom*factor));if(which==='oni'){document.getElementById('oniZoomLabel').textContent=`${view.zoom.toFixed(view.zoom%1?1:0)}×`;drawOniChart()}else if(which==='region'){document.getElementById('regionZoomLabel').textContent=`${view.zoom.toFixed(view.zoom%1?1:0)}×`;renderRegionChart()}else{document.getElementById('soiZoomLabel').textContent=`${view.zoom.toFixed(view.zoom%1?1:0)}×`;renderSoiChart()}}
+function resetZoom(which){const view=which==='oni'?oniView:which==='region'?regionView:soiView;view.zoom=1;view.center=.5;if(which==='oni'){document.getElementById('oniZoomLabel').textContent='1×';drawOniChart()}else if(which==='region'){document.getElementById('regionZoomLabel').textContent='1×';renderRegionChart()}else{document.getElementById('soiZoomLabel').textContent='1×';renderSoiChart()}}
+document.getElementById('oniZoomIn').onclick=()=>setZoom('oni',1.6);document.getElementById('oniZoomOut').onclick=()=>setZoom('oni',1/1.6);document.getElementById('oniZoomReset').onclick=()=>resetZoom('oni');
+document.getElementById('regionZoomIn').onclick=()=>setZoom('region',1.6);document.getElementById('regionZoomOut').onclick=()=>setZoom('region',1/1.6);document.getElementById('regionZoomReset').onclick=()=>resetZoom('region');
+document.getElementById('soiZoomIn').onclick=()=>setZoom('soi',1.6);document.getElementById('soiZoomOut').onclick=()=>setZoom('soi',1/1.6);document.getElementById('soiZoomReset').onclick=()=>resetZoom('soi');
+
+function bandTextColor(fillClass){if(fillClass==='elnino-weak'||fillClass==='elnino-moderate')return '#6b3512';if(fillClass==='lanina-weak'||fillClass==='lanina-moderate')return '#174766';return '#ffffff'}
+function drawOniChart(){
+  const svg=document.getElementById('oniChart');if(!svg||!oniSeries.length)return;
+  const {slice:data,start}=visibleSlice(oniSeries,oniView);const W=1100,H=430,L=110,R=20,T=18,B=54,plotW=W-L-R,plotH=H-T-B,yMin=-3,yMax=3;
+  const css=getComputedStyle(document.documentElement),border=css.getPropertyValue('--border').trim(),muted=css.getPropertyValue('--muted').trim(),surface=css.getPropertyValue('--surface').trim();
+  const x=i=>L+(data.length===1?0:i/(data.length-1))*plotW,y=v=>T+(yMax-v)/(yMax-yMin)*plotH;
+  const bands=[
+    {a:3,b:2,fill:'#d73027',name:tx('Muito Forte','Very Strong'),cls:'elnino-very'},
+    {a:2,b:1.5,fill:'#f46d43',name:tx('Forte','Strong'),cls:'elnino-strong'},
+    {a:1.5,b:1,fill:'#fdae61',name:tx('Moderado','Moderate'),cls:'elnino-moderate'},
+    {a:1,b:.5,fill:'#fee08b',name:tx('Fraco','Weak'),cls:'elnino-weak'},
+    {a:.5,b:-.5,fill:surface,name:'',cls:'neutral'},
+    {a:-.5,b:-1,fill:'#d1e5f0',name:tx('Fraco','Weak'),cls:'lanina-weak'},
+    {a:-1,b:-1.5,fill:'#92c5de',name:tx('Moderado','Moderate'),cls:'lanina-moderate'},
+    {a:-1.5,b:-2,fill:'#4393c3',name:tx('Forte','Strong'),cls:'lanina-strong'},
+    {a:-2,b:-3,fill:'#2166ac',name:tx('Muito Forte','Very Strong'),cls:'lanina-very'}
+  ];
+  let s='';
+  bands.forEach(b=>{const yy=y(b.a),hh=y(b.b)-y(b.a);s+=`<rect x="${L}" y="${yy}" width="${plotW}" height="${hh}" fill="${b.fill}" opacity="${b.cls==='neutral'?1:.92}"/>`;if(b.name){const tc=bandTextColor(b.cls);s+=`<text x="${L+8}" y="${yy+hh/2+4}" font-size="12" font-weight="700" fill="${tc}">${b.name}</text>`}});
+  s+=`<text x="${L+140}" y="${y(2.48)}" font-size="22" font-weight="800" fill="#fff">El Niño</text><text x="${L+140}" y="${y(-2.48)+7}" font-size="22" font-weight="800" fill="#fff">La Niña</text>`;
+  for(let v=-2.5;v<=2.5;v+=.5){const yy=y(v);s+=`<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="${v===0?muted:border}" stroke-width="${v===0?1.2:.55}" opacity="${v===0?.75:.6}"/><text x="${L-10}" y="${yy+4}" text-anchor="end" font-size="11" fill="${muted}">${v>0?'+':''}${String(v).replace('.',',')}</text>`}
+  const minYear=data[0].year,maxYear=data.at(-1).year,span=maxYear-minYear,step=span>50?10:span>25?5:span>10?2:1;for(let yr=Math.ceil(minYear/step)*step;yr<=maxYear;yr+=step){const i=data.findIndex(d=>d.year===yr&&d.monthIndex===0);if(i>=0){const xx=x(i);s+=`<line x1="${xx}" y1="${H-B}" x2="${xx}" y2="${H-B+6}" stroke="${muted}"/><text x="${xx}" y="${H-23}" text-anchor="middle" font-size="11" fill="${muted}">${yr}</text>`}}
+  for(let i=1;i<data.length;i++){const d0=data[i-1],d1=data[i],avg=(d0.value+d1.value)/2,stroke=avg>=.5?'#8f211c':avg<=-.5?'#174f83':'#8b9499';s+=`<line x1="${x(i-1).toFixed(2)}" y1="${y(d0.value).toFixed(2)}" x2="${x(i).toFixed(2)}" y2="${y(d1.value).toFixed(2)}" stroke="${stroke}" stroke-width="1.55" vector-effect="non-scaling-stroke"/>`}
+  const keyEvents=[['72–73',1972,1973],['82–83',1982,1983],['97–98',1997,1998],['15–16',2015,2016],['23–24',2023,2024]];
+  keyEvents.forEach(([label,a,b])=>{let best=-1,bv=-Infinity;data.forEach((d,i)=>{if(d.year>=a&&d.year<=b&&d.value>bv){bv=d.value;best=i}});if(best>=0&&bv>=1.5){const xx=x(best),yy=y(bv);s+=`<circle cx="${xx}" cy="${yy}" r="10" fill="none" stroke="#fff" stroke-width="1.5"/><text x="${xx}" y="${Math.max(T+13,yy-15)}" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">‘${label}</text>`}});
+  s+=`<rect id="oniHover" x="${L}" y="${T}" width="${plotW}" height="${plotH}" fill="transparent"/><line id="oniHoverLine" x1="0" y1="${T}" x2="0" y2="${H-B}" stroke="${muted}" stroke-width="1" opacity="0" pointer-events="none"/><circle id="oniHoverPoint" cx="0" cy="0" r="5" fill="#ffffff" stroke="#222" stroke-width="1.5" opacity="0" pointer-events="none"/>`;
+  svg.innerHTML=s;
+  const hover=svg.querySelector('#oniHover'),hline=svg.querySelector('#oniHoverLine'),point=svg.querySelector('#oniHoverPoint'),tip=document.getElementById('oniTooltip'),shell=document.getElementById('oniChartShell');
+  function move(ev){if(panState.oni)return;const r=svg.getBoundingClientRect(),px=(ev.clientX-r.left)/r.width*W,plotFrac=Math.max(0,Math.min(1,(px-L)/plotW)),i=Math.round(plotFrac*(data.length-1)),d=data[i],xx=x(i),yy=y(d.value),c=classify(d.value);hline.setAttribute('x1',xx);hline.setAttribute('x2',xx);hline.setAttribute('opacity','.8');point.setAttribute('cx',xx);point.setAttribute('cy',yy);point.setAttribute('opacity','1');tip.innerHTML=`<strong>${d.period}</strong><br>ONI: <span class="${c.cls}">${fmt(d.value)}</span><br>${c.label}`;const sr=shell.getBoundingClientRect();tip.style.left=`${Math.min(sr.width-155,Math.max(5,ev.clientX-sr.left))}px`;tip.style.top=`${Math.max(48,ev.clientY-sr.top)}px`;tip.classList.add('show')}
+  hover.addEventListener('mousemove',move);
+  hover.addEventListener('mouseleave',()=>{hline.setAttribute('opacity','0');point.setAttribute('opacity','0');tip.classList.remove('show')});
+  hover.addEventListener('wheel',ev=>{ev.preventDefault();const rect=svg.getBoundingClientRect(),frac=Math.max(0,Math.min(1,(ev.clientX-rect.left)/rect.width));const oldZoom=oniView.zoom,newZoom=Math.max(1,Math.min(12,oldZoom*(ev.deltaY<0?1.25:.8)));if(newZoom!==oldZoom){const vis=visibleSlice(oniSeries,oniView),globalIdx=vis.start+frac*Math.max(1,vis.slice.length-1);oniView.zoom=newZoom;oniView.center=Math.max(0,Math.min(1,globalIdx/(oniSeries.length-1)));document.getElementById('oniZoomLabel').textContent=`${newZoom.toFixed(newZoom%1?1:0)}×`;drawOniChart()}},{passive:false});
+  svg.classList.toggle('is-zoomed',oniView.zoom>1);svg.classList.toggle('is-dragging',!!panState.oni);
+  svg.onpointerdown=ev=>{if(oniView.zoom<=1||ev.button!==0)return;panState.oni={x:ev.clientX,center:oniView.center,pointerId:ev.pointerId};svg.setPointerCapture?.(ev.pointerId);tip.classList.remove('show');svg.classList.add('is-dragging');ev.preventDefault()};
+  svg.onpointermove=ev=>{const st=panState.oni;if(!st)return;const rect=svg.getBoundingClientRect(),dx=ev.clientX-st.x;oniView.center=Math.max(0,Math.min(1,st.center-dx/Math.max(1,rect.width)/oniView.zoom));drawOniChart()};
+  const endPan=ev=>{if(!panState.oni)return;try{svg.releasePointerCapture?.(panState.oni.pointerId)}catch(_e){}panState.oni=null;svg.classList.remove('is-dragging');svg.classList.toggle('is-zoomed',oniView.zoom>1)};
+  svg.onpointerup=endPan;svg.onpointercancel=endPan;
+}
+
+function detectEpisodes(){const out=[];let run=[],sign=0;const flush=()=>{if(run.length>=5){const values=run.map(d=>d.value),peak=sign>0?Math.max(...values):Math.min(...values);out.push({start:run[0].period,end:run.at(-1).period,sign,peak,n:run.length})}run=[]};for(const d of oniSeries){const s=d.value>=.5?1:d.value<=-.5?-1:0;if(s&&s===sign)run.push(d);else{flush();sign=s;if(s)run=[d]}}flush();return out}
+function episodeIntensity(e){const a=Math.abs(e.peak);if(a>=2)return{key:'very-strong',pt:'Muito forte',en:'Very strong'};if(a>=1.5)return{key:'strong',pt:'Forte',en:'Strong'};if(a>=1)return{key:'moderate',pt:e.sign>0?'Moderado':'Moderada',en:'Moderate'};return{key:'weak',pt:e.sign>0?'Fraco':'Fraca',en:'Weak'}}
+function episodeYears(e){const ys=(e.start.match(/(\d{4})/)||[])[1],ye=(e.end.match(/(\d{4})/)||[])[1];return ys&&ye?(ys===ye?ys:`${ys}–${ye}`):`${e.start} – ${e.end}`}
+function episodeType(e){const i=episodeIntensity(e),phase=e.sign>0?'El Niño':'La Niña';return `${phase} · ${currentLang==='en'?i.en:i.pt}`}
+function positionEpisodeTooltip(ev,el){const tip=document.getElementById('episodeTooltip');let x,y;if(ev&&Number.isFinite(ev.clientX)){x=ev.clientX+14;y=ev.clientY+14}else{const r=el.getBoundingClientRect();x=r.right+10;y=r.top}const w=tip.offsetWidth||250,h=tip.offsetHeight||150;x=Math.min(window.innerWidth-w-10,Math.max(10,x));y=Math.min(window.innerHeight-h-10,Math.max(10,y));tip.style.left=`${x}px`;tip.style.top=`${y}px`}
+function showEpisodeTooltip(e,ev,el){const tip=document.getElementById('episodeTooltip');tip.innerHTML=`<strong>${episodeYears(e)} · ${episodeType(e)}</strong><div class="episode-tooltip-grid"><span>${tx('Início','Start')}</span><b>${e.start}</b><span>${tx('Fim','End')}</span><b>${e.end}</b><span>${tx('Tipo','Type')}</span><b>${episodeType(e)}</b><span>${tx('Pico','Peak')}</span><b class="${e.sign>0?'warm':'cold'}">${fmt(e.peak)}</b><span>${tx('Janelas consecutivas','Consecutive windows')}</span><b>${e.n}</b></div>`;tip.classList.add('show');positionEpisodeTooltip(ev,el)}
+function hideEpisodeTooltip(){document.getElementById('episodeTooltip')?.classList.remove('show')}
+function renderEpisodes(){const eps=detectEpisodes();const warm=eps.filter(e=>e.sign>0),cold=eps.filter(e=>e.sign<0);const makeColumn=(items,sign)=>{const phase=sign>0?'El Niño':'La Niña',cls=sign>0?'elnino':'lanina';return `<div class="episode-column"><div class="episode-column-head"><h3>${phase}</h3><span>${items.length} ${tx('episódios','episodes')}</span></div><div class="episode-list">${items.map((e,idx)=>{const i=episodeIntensity(e);return `<button type="button" class="episode-event ${cls} ${i.key}" data-episode-sign="${sign}" data-episode-index="${idx}" aria-label="${phase}, ${episodeYears(e)}, ${currentLang==='en'?i.en:i.pt}">${episodeYears(e)}</button>`}).join('')}</div></div>`};const visual=document.getElementById('episodeVisual');visual.innerHTML=makeColumn(warm,1)+makeColumn(cold,-1);visual.querySelectorAll('.episode-event').forEach(btn=>{const arr=+btn.dataset.episodeSign>0?warm:cold,e=arr[+btn.dataset.episodeIndex];btn.addEventListener('mouseenter',ev=>showEpisodeTooltip(e,ev,btn));btn.addEventListener('mousemove',ev=>positionEpisodeTooltip(ev,btn));btn.addEventListener('mouseleave',hideEpisodeTooltip);btn.addEventListener('focus',()=>showEpisodeTooltip(e,null,btn));btn.addEventListener('blur',hideEpisodeTooltip)});document.getElementById('episodeRawBody').innerHTML=eps.map(e=>{const i=episodeIntensity(e);return `<tr><td>${e.start}</td><td>${e.end}</td><td>${e.sign>0?'El Niño':'La Niña'}</td><td>${currentLang==='en'?i.en:i.pt}</td><td class="${e.sign>0?'warm':'cold'}">${fmt(e.peak)}</td><td>${e.n}</td></tr>`}).join('')}
+
+function currentRegionData(){return selectedFrequency==='monthly'?monthlyRelative:weeklyRelative}
+function currentRegionValue(d){return d[REGION_META[selectedRegion][selectedFrequency==='monthly'?'monthlyKey':'weeklyKey']]}
+function updateRegionImage(){const meta=REGION_META[selectedRegion],stage=document.getElementById('regionImageStage'),img=document.getElementById('regionImage'),placeholder=document.getElementById('regionImagePlaceholder');stage.classList.remove('image-missing');img.style.display='block';img.alt=`Localização da região ${meta.name} no Pacífico tropical`;placeholder.textContent=`Imagem da região ${meta.name}`;img.onerror=()=>{stage.classList.add('image-missing')};img.onload=()=>{stage.classList.remove('image-missing')};img.src=meta.image}
+function selectRegion(key){selectedRegion=key;regionView={zoom:1,center:.5};document.getElementById('regionZoomLabel').textContent='1×';document.querySelectorAll('.region-card').forEach(b=>b.classList.toggle('active',b.dataset.region===key));updateRegionImage();renderRegion()}
+function selectFrequency(freq){selectedFrequency=freq;regionView={zoom:1,center:.5};document.getElementById('regionZoomLabel').textContent='1×';document.querySelectorAll('.seg-btn').forEach(b=>b.classList.toggle('active',b.dataset.frequency===freq));renderRegion()}
+document.querySelectorAll('.region-card').forEach(b=>b.addEventListener('click',()=>selectRegion(b.dataset.region)));document.querySelectorAll('.seg-btn').forEach(b=>b.addEventListener('click',()=>selectFrequency(b.dataset.frequency)));
+document.getElementById('regionFilter').addEventListener('input',()=>renderRegionRaw());
+function updateRegionCardValues(){const data=currentRegionData();for(const key of Object.keys(REGION_META)){const el=document.getElementById(`cardVal-${key}`);if(!el)continue;if(!data.length){el.textContent='—';el.className='region-card-value neutral';continue}const v=data.at(-1)[key];el.textContent=fmt(v);el.className=`region-card-value ${v>.05?'warm':v<-.05?'cold':'neutral'}`}}
+function renderRegion(){const data=currentRegionData();updateRegionCardValues();updateRegionImage();const source=document.getElementById('regionSourceBox');if(selectedFrequency==='monthly')source.innerHTML=`<strong>${tx('Fonte:','Source:')}</strong> NOAA Climate Prediction Center · Monthly Relative OISSTv2.1 (${tx('base','base')} 1991–2020) <a href="${SOURCE_URLS.monthlyRelative}" target="_blank" rel="noopener">${tx('acessar dados mensais ↗','view monthly data ↗')}</a>`;else source.innerHTML=`<strong>${tx('Fonte:','Source:')}</strong> NOAA Climate Prediction Center · Weekly Relative OISSTv2.1 (${tx('base','base')} 1991–2020) <a href="${SOURCE_URLS.weeklyRelative}" target="_blank" rel="noopener">${tx('acessar dados semanais ↗','view weekly data ↗')}</a>`;const msg=document.getElementById('regionMessage'),svg=document.getElementById('regionChart');if(!data.length){svg.innerHTML='';msg.hidden=false;renderRegionRaw();return}msg.hidden=true;renderRegionChart();renderRegionRaw()}
+function renderRegionRaw(){const data=currentRegionData(),filter=document.getElementById('regionFilter').value.trim().toLowerCase();const rows=data.filter(d=>!filter||String(d.year).includes(filter)||d.date.toLowerCase().includes(filter)||d.label.toLowerCase().includes(filter));document.getElementById('regionCount').textContent=`${rows.length} ${tx('registros','records')}`;if(selectedFrequency==='monthly')document.getElementById('regionRawHead').innerHTML=`<tr><th>${tx('Ano','Year')}</th><th>${tx('Mês','Month')}</th><th>${tx('Data','Date')}</th><th>${tx('Região','Region')}</th><th>${tx('Anomalia relativa (°C)','Relative anomaly (°C)')}</th></tr>`;else document.getElementById('regionRawHead').innerHTML=`<tr><th>${tx('Data','Date')}</th><th>${tx('Região','Region')}</th><th>${tx('Anomalia relativa (°C)','Relative anomaly (°C)')}</th></tr>`;document.getElementById('regionRawBody').innerHTML=rows.map(d=>{const v=currentRegionValue(d),cls=v>.05?'warm':v<-.05?'cold':'neutral';return selectedFrequency==='monthly'?`<tr><td>${d.year}</td><td>${months()[d.month-1]}</td><td>${d.date}</td><td>${REGION_META[selectedRegion].name}</td><td class="${cls}">${fmt(v)}</td></tr>`:`<tr><td>${d.date}</td><td>${REGION_META[selectedRegion].name}</td><td class="${cls}">${fmt(v)}</td></tr>`}).join('')}
+function renderRegionChart(){const full=currentRegionData(),svg=document.getElementById('regionChart');if(!full.length){svg.innerHTML='';return}const {slice:data,start}=visibleSlice(full,regionView),W=1100,H=390,L=70,R=20,T=18,B=54,plotW=W-L-R,plotH=H-T-B;const vals=data.map(currentRegionValue),absMax=Math.max(1,Math.ceil(Math.max(...vals.map(v=>Math.abs(v)))*2)/2),yMin=-absMax,yMax=absMax;const css=getComputedStyle(document.documentElement),border=css.getPropertyValue('--border').trim(),muted=css.getPropertyValue('--muted').trim(),surface2=css.getPropertyValue('--surface-2').trim();const x=i=>L+(data.length===1?0:i/(data.length-1))*plotW,y=v=>T+(yMax-v)/(yMax-yMin)*plotH;let s=`<rect x="${L}" y="${T}" width="${plotW}" height="${plotH}" fill="${surface2}" opacity=".35"/>`;
+  const tick=.5;for(let v=Math.ceil(yMin/tick)*tick;v<=yMax+.001;v+=tick){const yy=y(v);s+=`<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="${v===0?muted:border}" stroke-width="${v===0?1.4:.6}"/><text x="${L-10}" y="${yy+4}" text-anchor="end" font-size="11" fill="${muted}">${v>0?'+':''}${v.toFixed(1).replace('.',',')}</text>`}
+  const minYear=data[0].year,maxYear=data.at(-1).year,span=maxYear-minYear,step=span>30?5:span>12?2:1;for(let yr=Math.ceil(minYear/step)*step;yr<=maxYear;yr+=step){const i=data.findIndex(d=>d.year===yr&&(selectedFrequency==='monthly'?d.month===1:d.month===1&&d.day<=7));if(i>=0){const xx=x(i);s+=`<text x="${xx}" y="${H-22}" text-anchor="middle" font-size="11" fill="${muted}">${yr}</text>`}}
+  for(let i=1;i<data.length;i++){const v0=currentRegionValue(data[i-1]),v1=currentRegionValue(data[i]),avg=(v0+v1)/2,stroke=avg>=0?'#b73730':'#276eaa';s+=`<line x1="${x(i-1).toFixed(2)}" y1="${y(v0).toFixed(2)}" x2="${x(i).toFixed(2)}" y2="${y(v1).toFixed(2)}" stroke="${stroke}" stroke-width="1.55" vector-effect="non-scaling-stroke"/>`}
+  s+=`<rect id="regionHover" x="${L}" y="${T}" width="${plotW}" height="${plotH}" fill="transparent"/><line id="regionHoverLine" x1="0" y1="${T}" x2="0" y2="${H-B}" stroke="${muted}" opacity="0"/><circle id="regionHoverPoint" cx="0" cy="0" r="5" fill="#fff" stroke="#222" opacity="0"/>`;svg.innerHTML=s;
+  const hover=svg.querySelector('#regionHover'),hline=svg.querySelector('#regionHoverLine'),point=svg.querySelector('#regionHoverPoint'),tip=document.getElementById('regionTooltip'),shell=document.getElementById('regionChartShell');
+  function move(ev){if(panState.region)return;const r=svg.getBoundingClientRect(),px=(ev.clientX-r.left)/r.width*W,plotFrac=Math.max(0,Math.min(1,(px-L)/plotW)),i=Math.round(plotFrac*(data.length-1)),d=data[i],v=currentRegionValue(d),xx=x(i),yy=y(v);hline.setAttribute('x1',xx);hline.setAttribute('x2',xx);hline.setAttribute('opacity','.8');point.setAttribute('cx',xx);point.setAttribute('cy',yy);point.setAttribute('opacity','1');tip.innerHTML=`<strong>${REGION_META[selectedRegion].name}</strong><br>${d.label}<br>Anomalia relativa: <span class="${v>=0?'warm':'cold'}">${fmt(v)}</span>`;const sr=shell.getBoundingClientRect();tip.style.left=`${Math.min(sr.width-185,Math.max(5,ev.clientX-sr.left))}px`;tip.style.top=`${Math.max(48,ev.clientY-sr.top)}px`;tip.classList.add('show')}
+  hover.addEventListener('mousemove',move);hover.addEventListener('mouseleave',()=>{hline.setAttribute('opacity','0');point.setAttribute('opacity','0');tip.classList.remove('show')});hover.addEventListener('wheel',ev=>{ev.preventDefault();const rect=svg.getBoundingClientRect(),frac=Math.max(0,Math.min(1,(ev.clientX-rect.left)/rect.width)),oldZoom=regionView.zoom,newZoom=Math.max(1,Math.min(12,oldZoom*(ev.deltaY<0?1.25:.8)));if(newZoom!==oldZoom){const vis=visibleSlice(full,regionView),globalIdx=vis.start+frac*Math.max(1,vis.slice.length-1);regionView.zoom=newZoom;regionView.center=Math.max(0,Math.min(1,globalIdx/(full.length-1)));document.getElementById('regionZoomLabel').textContent=`${newZoom.toFixed(newZoom%1?1:0)}×`;renderRegionChart()}},{passive:false});
+  svg.classList.toggle('is-zoomed',regionView.zoom>1);svg.classList.toggle('is-dragging',!!panState.region);
+  svg.onpointerdown=ev=>{if(regionView.zoom<=1||ev.button!==0)return;panState.region={x:ev.clientX,center:regionView.center,pointerId:ev.pointerId};svg.setPointerCapture?.(ev.pointerId);tip.classList.remove('show');svg.classList.add('is-dragging');ev.preventDefault()};
+  svg.onpointermove=ev=>{const st=panState.region;if(!st)return;const rect=svg.getBoundingClientRect(),dx=ev.clientX-st.x;regionView.center=Math.max(0,Math.min(1,st.center-dx/Math.max(1,rect.width)/regionView.zoom));renderRegionChart()};
+  const endRegionPan=ev=>{if(!panState.region)return;try{svg.releasePointerCapture?.(panState.region.pointerId)}catch(_e){}panState.region=null;svg.classList.remove('is-dragging');svg.classList.toggle('is-zoomed',regionView.zoom>1)};
+  svg.onpointerup=endRegionPan;svg.onpointercancel=endRegionPan;
+}
+
+
+function currentSoiData(){return selectedSoiFrequency==='monthly'?soiMonthly:soi3m}
+document.querySelectorAll('[data-soi-frequency]').forEach(b=>b.addEventListener('click',()=>{selectedSoiFrequency=b.dataset.soiFrequency;soiView={zoom:1,center:.5};document.getElementById('soiZoomLabel').textContent='1×';document.querySelectorAll('[data-soi-frequency]').forEach(x=>x.classList.toggle('active',x===b));renderSoi()}));
+document.getElementById('soiFilter').addEventListener('input',renderSoiRaw);
+function renderSoi(){const data=currentSoiData(),msg=document.getElementById('soiMessage'),source=document.getElementById('soiSourceBox');if(selectedSoiFrequency==='monthly')source.innerHTML=`<strong>${tx('Fonte:','Source:')}</strong> NOAA Climate Prediction Center · Southern Oscillation Index <a href="${SOURCE_URLS.soi}" target="_blank" rel="noopener">${tx('acessar dados ↗','view data ↗')}</a>`;else source.innerHTML=`<strong>${tx('Fonte:','Source:')}</strong> NOAA Climate Prediction Center · Three-Month Running Mean SOI <a href="${SOURCE_URLS.soi3m}" target="_blank" rel="noopener">${tx('acessar dados ↗','view data ↗')}</a>`;if(!data.length){document.getElementById('soiChart').innerHTML='';msg.hidden=false;renderSoiRaw();return}msg.hidden=true;renderSoiChart();renderSoiRaw()}
+function renderSoiRaw(){const data=currentSoiData(),filter=document.getElementById('soiFilter').value.trim().toLowerCase(),rows=data.filter(d=>!filter||String(d.year).includes(filter)||months()[d.month-1].toLowerCase().includes(filter));document.getElementById('soiCount').textContent=`${rows.length} ${tx('registros','records')}`;document.getElementById('soiRawHead').innerHTML=`<tr><th>${tx('Ano','Year')}</th><th>${tx('Mês','Month')}</th><th>${selectedSoiFrequency==='monthly'?'SOI':tx('SOI · média de 3 meses','SOI · 3-month mean')}</th></tr>`;document.getElementById('soiRawBody').innerHTML=rows.map(d=>`<tr><td>${d.year}</td><td>${months()[d.month-1]}</td><td class="${d.value<0?'warm':d.value>0?'cold':'neutral'}">${d.value>0?'+':''}${d.value.toFixed(1).replace('.',',')}</td></tr>`).join('')}
+function renderSoiChart(){const full=currentSoiData(),svg=document.getElementById('soiChart');if(!full.length){svg.innerHTML='';return}const {slice:data}=visibleSlice(full,soiView),W=1100,H=390,L=70,R=20,T=18,B=54,plotW=W-L-R,plotH=H-T-B,vals=data.map(d=>d.value),absMax=Math.max(2,Math.ceil(Math.max(...vals.map(v=>Math.abs(v))))),yMin=-absMax,yMax=absMax;const css=getComputedStyle(document.documentElement),border=css.getPropertyValue('--border').trim(),muted=css.getPropertyValue('--muted').trim(),surface2=css.getPropertyValue('--surface-2').trim();const x=i=>L+(data.length===1?0:i/(data.length-1))*plotW,y=v=>T+(yMax-v)/(yMax-yMin)*plotH;let out=`<rect x="${L}" y="${T}" width="${plotW}" height="${plotH}" fill="${surface2}" opacity=".35"/>`;
+for(let v=Math.ceil(yMin);v<=yMax;v++){const yy=y(v);out+=`<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="${v===0?muted:border}" stroke-width="${v===0?1.5:.6}"/><text x="${L-10}" y="${yy+4}" text-anchor="end" font-size="11" fill="${muted}">${v>0?'+':''}${v}</text>`}
+const minYear=data[0].year,maxYear=data.at(-1).year,span=maxYear-minYear,step=span>40?10:span>20?5:span>10?2:1;for(let yr=Math.ceil(minYear/step)*step;yr<=maxYear;yr+=step){const i=data.findIndex(d=>d.year===yr&&d.month===1);if(i>=0)out+=`<text x="${x(i)}" y="${H-22}" text-anchor="middle" font-size="11" fill="${muted}">${yr}</text>`}
+for(let i=1;i<data.length;i++){const a=data[i-1].value,b=data[i].value,stroke=(a+b)/2<0?'#b73730':'#276eaa';out+=`<line x1="${x(i-1).toFixed(2)}" y1="${y(a).toFixed(2)}" x2="${x(i).toFixed(2)}" y2="${y(b).toFixed(2)}" stroke="${stroke}" stroke-width="1.55" vector-effect="non-scaling-stroke"/>`}
+out+=`<rect id="soiHover" x="${L}" y="${T}" width="${plotW}" height="${plotH}" fill="transparent"/><line id="soiHoverLine" x1="0" y1="${T}" x2="0" y2="${H-B}" stroke="${muted}" opacity="0"/><circle id="soiHoverPoint" cx="0" cy="0" r="5" fill="#fff" stroke="#222" opacity="0"/>`;svg.innerHTML=out;const hover=svg.querySelector('#soiHover'),hline=svg.querySelector('#soiHoverLine'),point=svg.querySelector('#soiHoverPoint'),tip=document.getElementById('soiTooltip'),shell=document.getElementById('soiChartShell');hover.addEventListener('mousemove',ev=>{if(panState.soi)return;const r=svg.getBoundingClientRect(),px=(ev.clientX-r.left)/r.width*W,plotFrac=Math.max(0,Math.min(1,(px-L)/plotW)),i=Math.round(plotFrac*(data.length-1)),d=data[i],xx=x(i),yy=y(d.value);hline.setAttribute('x1',xx);hline.setAttribute('x2',xx);hline.setAttribute('opacity','.8');point.setAttribute('cx',xx);point.setAttribute('cy',yy);point.setAttribute('opacity','1');tip.innerHTML=`<strong>${months()[d.month-1]} ${d.year}</strong><br>SOI: <span class="${d.value<0?'warm':d.value>0?'cold':'neutral'}">${d.value>0?'+':''}${d.value.toFixed(1).replace('.',',')}</span>`;const sr=shell.getBoundingClientRect();tip.style.left=`${Math.min(sr.width-150,Math.max(5,ev.clientX-sr.left))}px`;tip.style.top=`${Math.max(48,ev.clientY-sr.top)}px`;tip.classList.add('show')});hover.addEventListener('mouseleave',()=>{hline.setAttribute('opacity','0');point.setAttribute('opacity','0');tip.classList.remove('show')});hover.addEventListener('wheel',ev=>{ev.preventDefault();const rect=svg.getBoundingClientRect(),frac=Math.max(0,Math.min(1,(ev.clientX-rect.left)/rect.width)),old=soiView.zoom,next=Math.max(1,Math.min(12,old*(ev.deltaY<0?1.25:.8)));if(next!==old){const vis=visibleSlice(full,soiView),globalIdx=vis.start+frac*Math.max(1,vis.slice.length-1);soiView.zoom=next;soiView.center=Math.max(0,Math.min(1,globalIdx/(full.length-1)));document.getElementById('soiZoomLabel').textContent=`${next.toFixed(next%1?1:0)}×`;renderSoiChart()}},{passive:false});svg.classList.toggle('is-zoomed',soiView.zoom>1);svg.classList.toggle('is-dragging',!!panState.soi);svg.onpointerdown=ev=>{if(soiView.zoom<=1||ev.button!==0)return;panState.soi={x:ev.clientX,center:soiView.center,pointerId:ev.pointerId};svg.setPointerCapture?.(ev.pointerId);tip.classList.remove('show');svg.classList.add('is-dragging');ev.preventDefault()};svg.onpointermove=ev=>{const st=panState.soi;if(!st)return;const rect=svg.getBoundingClientRect(),dx=ev.clientX-st.x;soiView.center=Math.max(0,Math.min(1,st.center-dx/Math.max(1,rect.width)/soiView.zoom));renderSoiChart()};const endSoiPan=ev=>{if(!panState.soi)return;try{svg.releasePointerCapture?.(panState.soi.pointerId)}catch(_e){}panState.soi=null;svg.classList.remove('is-dragging');svg.classList.toggle('is-zoomed',soiView.zoom>1)};svg.onpointerup=endSoiPan;svg.onpointercancel=endSoiPan}
+
+document.getElementById('aboutToggle').addEventListener('click',()=>{const b=document.getElementById('aboutToggle'),c=document.getElementById('aboutContent'),open=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',String(!open));c.hidden=open});
+document.getElementById('sourcesToggle').addEventListener('click',()=>{const b=document.getElementById('sourcesToggle'),c=document.getElementById('sourcesContent'),open=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',String(!open));c.hidden=open});
+const aboutImg=document.getElementById('aboutEnsoImage'),aboutPh=document.getElementById('aboutImagePlaceholder');aboutImg.onerror=()=>{aboutImg.style.display='none';aboutPh.style.display='block'};aboutImg.onload=()=>{aboutImg.style.display='block';aboutPh.style.display='none'};
+
+document.querySelectorAll('.view-tab').forEach(btn=>btn.addEventListener('click',()=>{const group=btn.dataset.tabs,target=btn.dataset.target;document.querySelectorAll(`.view-tab[data-tabs="${group}"]`).forEach(b=>b.classList.toggle('active',b===btn));document.querySelectorAll(`[data-panel-group="${group}"]`).forEach(p=>p.hidden=p.dataset.panel!==target)}));
+
+function refreshCurrentSstImage(){
+  const img=document.querySelector('.current-sst-image');
+  if(!img)return;
+  const base='https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_update/Monthly_RelSSTA_map-hr.png';
+  img.src=`${base}?v=${Date.now()}`;
+}
+updateImpactFigure();
+refreshCurrentSstImage();
+loadData();
+setInterval(()=>{loadData();refreshCurrentSstImage()},AUTO_REFRESH_MS);
+</script>
+</body>
+</html>
