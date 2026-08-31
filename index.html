@@ -6,6 +6,25 @@
 <meta name="color-scheme" content="light dark">
 <title>Monitor ENSO | CIDACS Clima</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2730%27 fill=%27%237B0A06%27/%3E%3Ctext x=%2732%27 y=%2740%27 text-anchor=%27middle%27 font-family=%27Verdana,sans-serif%27 font-size=%2728%27 font-weight=%27700%27 fill=%27white%27%3Eel%3C/text%3E%3C/svg%3E">
+<!-- Google Analytics 4 -->
+<script>
+  window.GA_MEASUREMENT_ID = 'G-55M6CTYB2R';
+  window.GA_ENABLED = /^G-[A-Z0-9]+$/i.test(window.GA_MEASUREMENT_ID) && window.GA_MEASUREMENT_ID !== 'G-SEU_ID';
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
+  window.trackGA = function(eventName, params = {}){
+    if (!window.GA_ENABLED) return;
+    window.gtag('event', eventName, params);
+  };
+  if (window.GA_ENABLED) {
+    const gaScript = document.createElement('script');
+    gaScript.async = true;
+    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(window.GA_MEASUREMENT_ID);
+    document.head.appendChild(gaScript);
+    window.gtag('js', new Date());
+    window.gtag('config', window.GA_MEASUREMENT_ID, { send_page_view: true });
+  }
+</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap');
 :root{
@@ -192,7 +211,7 @@ footer{padding:28px 0 6px;color:var(--muted);font-size:11px;text-align:center}.f
     </div>
   </section>
 
-  <section class="section current-situation" aria-labelledby="current-situation-title">
+  <section class="section current-situation" id="current-situation" aria-labelledby="current-situation-title">
     <div class="section-head">
       <div>
         <h2 id="current-situation-title" data-pt="Situação atual do El Niño" data-en="Current El Niño situation">Situação atual do El Niño</h2>
@@ -1112,6 +1131,83 @@ updateImpactFigure();
 refreshCurrentSstImage();
 loadData();
 setInterval(()=>{loadData();refreshCurrentSstImage()},AUTO_REFRESH_MS);
+
+
+// Google Analytics 4 — eventos de interação do Monitor ENSO.
+(function setupAnalyticsEvents(){
+  const send = (name, params={}) => { if (typeof window.trackGA === 'function') window.trackGA(name, params); };
+
+  // Cliques e seleções relevantes. O listener delegado evita interferir nas interações já existentes.
+  document.addEventListener('click', (event) => {
+    const el = event.target.closest('button, a');
+    if (!el) return;
+
+    if (el.matches('[data-index-series]')) {
+      send('select_enso_index', { index_name: el.dataset.indexSeries.toUpperCase(), context: 'historical_series' });
+    }
+    if (el.matches('[data-episode-series]')) {
+      send('select_enso_index', { index_name: el.dataset.episodeSeries.toUpperCase(), context: 'enso_episodes' });
+    }
+    if (el.matches('[data-region]')) {
+      const region = REGION_META?.[el.dataset.region]?.name || el.dataset.region;
+      send('select_nino_region', { region_name: region, frequency: selectedFrequency });
+    }
+    if (el.matches('[data-frequency]')) {
+      send('select_nino_frequency', { frequency: el.dataset.frequency, region_name: REGION_META?.[selectedRegion]?.name || selectedRegion });
+    }
+    if (el.matches('[data-soi-frequency]')) {
+      send('select_soi_series', { series_type: el.dataset.soiFrequency === '3m' ? '3_month_running_mean' : 'monthly' });
+    }
+    if (el.matches('[data-situation-figure]')) {
+      send('view_current_panel', { panel_name: el.dataset.situationFigure });
+    }
+    if (el.matches('[data-impact-phase], [data-impact-season]')) {
+      const phase = el.dataset.impactPhase || selectedImpactPhase;
+      const season = el.dataset.impactSeason || selectedImpactSeason;
+      send('select_enso_impact', { enso_phase: phase, season: season.toUpperCase() });
+    }
+    if (el.matches('.view-tab') && el.dataset.target === 'raw') {
+      send('view_raw_data', { dataset_section: el.dataset.tabs || 'unknown' });
+    }
+    if (el.id === 'aboutToggle' || el.id === 'criteriaToggle' || el.id === 'sourcesToggle') {
+      const sectionMap = { aboutToggle: 'about_indices', criteriaToggle: 'enso_criteria', sourcesToggle: 'data_sources' };
+      send('toggle_info_section', { section_name: sectionMap[el.id], state: el.getAttribute('aria-expanded') === 'true' ? 'open' : 'closed' });
+    }
+    if (el.id === 'langPt' || el.id === 'langEn') {
+      send('change_language', { language: el.id === 'langEn' ? 'en' : 'pt' });
+    }
+    if (el.id === 'themeToggle') {
+      send('change_theme', { theme: document.documentElement.dataset.theme || 'light' });
+    }
+
+    const link = el.closest('a[href]');
+    if (link) {
+      try {
+        const url = new URL(link.href, window.location.href);
+        if (url.origin !== window.location.origin && /^https?:$/.test(url.protocol)) {
+          send('outbound_click', { link_domain: url.hostname, link_url: url.href, link_text: (link.innerText || link.getAttribute('aria-label') || '').trim().slice(0,100) });
+        }
+      } catch (_e) {}
+    }
+  });
+
+  // Registra uma visualização de cada bloco quando ele entra de fato na área visível.
+  if ('IntersectionObserver' in window) {
+    const seen = new Set();
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting || entry.intersectionRatio < 0.35) return;
+        const section = entry.target;
+        const key = section.id || 'current_situation';
+        if (seen.has(key)) return;
+        seen.add(key);
+        const heading = section.querySelector('h2, .about-toggle strong');
+        send('view_dashboard_section', { section_id: key, section_title: (heading?.textContent || key).trim().slice(0,100) });
+      });
+    }, { threshold: [0.35] });
+    document.querySelectorAll('#current-situation, #oni-section, #episodes-section, #regions-section, #soi-section, #impacts-section, #about-section, #criteria, #fontes').forEach(section => observer.observe(section));
+  }
+})();
 </script>
 </body>
 </html>
