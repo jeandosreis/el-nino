@@ -149,7 +149,8 @@ footer{padding:28px 0 6px;color:var(--muted);font-size:11px;text-align:center}.f
 .about-copy{padding:0 2px 18px;max-width:980px;font-size:13px;color:var(--muted);line-height:1.72}.about-copy h3{color:var(--text);font-size:15px;margin:16px 0 6px}.about-copy p{margin:7px 0}.about-copy strong{color:var(--text)}
 .about-figure{display:block;width:min(940px,100%);height:auto;margin:18px auto 8px;border-radius:10px}.about-figure-placeholder{display:none;border:1px dashed var(--border);padding:28px;text-align:center;color:var(--muted);border-radius:10px;margin:16px 0}
 .equation-flow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}.equation-card{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:14px}.equation-card strong{display:block;margin-bottom:8px}.formula{font-family:Georgia,'Times New Roman',serif;font-size:16px;color:var(--text);overflow-x:auto;padding:8px 0}.formula .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.2}.formula .frac span:first-child{border-bottom:1px solid currentColor;padding:0 5px 3px}.formula .frac span:last-child{padding:3px 5px 0}
-.soi-note{font-size:12px;color:var(--muted);margin:10px 0 0}.soi-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin:4px 0 10px}.legend-swatch{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:-1px}
+.soi-note{font-size:12px;color:var(--muted);margin:10px 0 0}.soi-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin:4px 0 10px}
+.index-switch-wrap{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:0 22px 14px}.index-switch-note{font-size:11.5px;color:var(--muted);max-width:660px}.index-switch-note strong{color:var(--text)}.legend-swatch{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:-1px}
 
 @media(max-width:900px){.status-grid{grid-template-columns:repeat(2,1fr)}.info-grid{grid-template-columns:repeat(2,1fr)}.method-grid{grid-template-columns:1fr}.region-cards{grid-template-columns:repeat(2,1fr)}.equation-flow{grid-template-columns:1fr}}
 @media(max-width:680px){.nav-link{display:none}}
@@ -163,7 +164,7 @@ footer{padding:28px 0 6px;color:var(--muted);font-size:11px;text-align:center}.f
       <span class="brand-logo-wrap"><img class="brand-logo" src="https://cidacs.bahia.fiocruz.br/wp-content/themes/cidacs_new/img/logo-header.svg" alt="CIDACS"></span>
     </a>
     <div class="actions">
-      <a class="nav-link" href="#oni-section">ONI</a>
+      <a class="nav-link" href="#oni-section">RONI / ONI</a>
       <a class="nav-link" href="#regions-section" data-pt="Regiões Niño" data-en="Niño regions">Regiões Niño</a>
       <a class="nav-link" href="#soi-section">SOI</a>
       <a class="nav-link" href="#impacts-section" data-pt="Impactos" data-en="Impacts">Impactos</a>
@@ -210,8 +211,8 @@ footer{padding:28px 0 6px;color:var(--muted);font-size:11px;text-align:center}.f
     </section>
 
     <section class="status-grid" aria-label="Resumo atual">
-      <article class="status-card"><div class="label" data-pt="Classificação atual" data-en="Current classification">Classificação atual</div><div class="value" id="statusClass">—</div><div class="sub" id="statusClassSub">Baseada no ONI</div></article>
-      <article class="status-card"><div class="label">ONI</div><div class="value" id="statusOni">—</div><div class="sub" id="statusOniSub">NOAA/PSL</div></article>
+      <article class="status-card"><div class="label" data-pt="Classificação atual" data-en="Current classification">Classificação atual</div><div class="value" id="statusClass">—</div><div class="sub" id="statusClassSub" data-pt="Status oficial do CPC" data-en="Official CPC status">Status oficial do CPC</div></article>
+      <article class="status-card"><div class="label">RONI</div><div class="value" id="statusRoni">—</div><div class="sub" id="statusRoniSub">CPC · ERSSTv6</div></article>
       <article class="status-card"><div class="label" data-pt="Niño 3.4 relativo" data-en="Relative Niño 3.4">Niño 3.4 relativo</div><div class="value" id="statusN34">—</div><div class="sub" id="statusN34Sub">CPC · OISSTv2.1</div></article>
       <article class="status-card"><div class="label" data-pt="SOI · média de 3 meses" data-en="SOI · 3-month mean">SOI · média de 3 meses</div><div class="value neutral" id="statusSoi">—</div><div class="sub" id="statusSoiSub" data-pt="Componente atmosférica do ENSO" data-en="Atmospheric component of ENSO">Componente atmosférica do ENSO</div></article>
     </section>
@@ -249,8 +250,15 @@ footer{padding:28px 0 6px;color:var(--muted);font-size:11px;text-align:center}.f
   </section>
 
   <section class="section" id="oni-section">
-    <div class="section-head"><div><h2 data-pt="Conheça a série histórica do El Niño" data-en="Explore the historical El Niño series">Conheça a série histórica do El Niño</h2><p data-pt="O gráfico usa o Oceanic Niño Index (ONI), índice de referência da NOAA Physical Sciences Laboratory e do Climate Prediction Center para identificar e classificar episódios de El Niño e La Niña a partir das anomalias de temperatura da superfície do mar na região Niño 3.4 e de sua persistência." data-en="This chart uses the Oceanic Niño Index (ONI), the reference index used by NOAA's Physical Sciences Laboratory and Climate Prediction Center to identify and classify El Niño and La Niña episodes from sea-surface temperature anomalies in the Niño 3.4 region and their persistence.">O gráfico usa o Oceanic Niño Index (ONI), índice de referência da NOAA Physical Sciences Laboratory e do Climate Prediction Center para identificar e classificar episódios de El Niño e La Niña a partir das anomalias de temperatura da superfície do mar na região Niño 3.4 e de sua persistência.</p></div></div>
-    <div class="view-tabs" role="tablist" aria-label="Visualização ONI">
+    <div class="section-head"><div><h2 data-pt="Conheça a série histórica do El Niño e La Niña" data-en="Explore the historical El Niño and La Niña series">Conheça a série histórica do El Niño e La Niña</h2><p data-pt="Desde fevereiro de 2026, o Climate Prediction Center da NOAA utiliza o Relative Oceanic Niño Index (RONI) como índice de referência para o monitoramento e a previsão oficiais do ENSO. O ONI permanece disponível como índice tradicional para comparação histórica." data-en="Since February 2026, NOAA's Climate Prediction Center has used the Relative Oceanic Niño Index (RONI) as the reference index for official ENSO monitoring and prediction. The ONI remains available as the traditional index for historical comparison.">Desde fevereiro de 2026, o Climate Prediction Center da NOAA utiliza o Relative Oceanic Niño Index (RONI) como índice de referência para o monitoramento e a previsão oficiais do ENSO. O ONI permanece disponível como índice tradicional para comparação histórica.</p></div></div>
+    <div class="index-switch-wrap">
+      <div class="frequency-switch" aria-label="Índice ENSO">
+        <button class="seg-btn active" data-index-series="roni" type="button" data-pt="RONI · oficial atual" data-en="RONI · current official">RONI · oficial atual</button>
+        <button class="seg-btn" data-index-series="oni" type="button" data-pt="ONI · índice tradicional" data-en="ONI · traditional index">ONI · índice tradicional</button>
+      </div>
+      <div class="index-switch-note" data-pt="O RONI é a média móvel de três meses do Niño 3.4 relativo e desconta a anomalia média dos trópicos (20°N–20°S)." data-en="RONI is the three-month running mean of relative Niño 3.4 and subtracts the mean tropical anomaly (20°N–20°S).">O RONI é a média móvel de três meses do Niño 3.4 relativo e desconta a anomalia média dos trópicos (20°N–20°S).</div>
+    </div>
+    <div class="view-tabs" role="tablist" aria-label="Visualização RONI e ONI">
       <button class="view-tab active" data-tabs="oni" data-target="chart" type="button" data-pt="Gráfico" data-en="Chart">Gráfico</button>
       <button class="view-tab" data-tabs="oni" data-target="raw" type="button" data-pt="Dados brutos" data-en="Raw data">Dados brutos</button>
     </div>
@@ -258,25 +266,32 @@ footer{padding:28px 0 6px;color:var(--muted);font-size:11px;text-align:center}.f
       <div class="panel" data-panel-group="oni" data-panel="chart">
         <div class="chart-toolbar">
           <div class="chart-hint" data-pt="Passe o mouse para consultar cada valor. Use a roda do mouse ou os botões para ampliar; com o zoom ativo, clique e arraste o gráfico para navegar no tempo." data-en="Hover to inspect each value. Use the mouse wheel or buttons to zoom; when zoomed in, click and drag the chart to move through time.">Passe o mouse para consultar cada valor. Use a roda do mouse ou os botões para ampliar; com o zoom ativo, clique e arraste o gráfico para navegar no tempo.</div>
-          <div class="zoom-controls" aria-label="Controles de zoom do gráfico ONI">
+          <div class="zoom-controls" aria-label="Controles de zoom do gráfico RONI/ONI">
             <button class="zoom-btn" id="oniZoomOut" type="button" title="Afastar">−</button>
             <span class="zoom-label" id="oniZoomLabel">1×</span>
             <button class="zoom-btn" id="oniZoomIn" type="button" title="Aproximar">+</button>
             <button class="zoom-btn" id="oniZoomReset" type="button" title="Restaurar">↺</button>
           </div>
         </div>
-        <div class="chart-shell" id="oniChartShell"><svg id="oniChart" viewBox="0 0 1100 430" role="img" aria-label="Série temporal do ONI"></svg><div class="tooltip" id="oniTooltip"></div></div>
+        <div class="chart-shell" id="oniChartShell"><svg id="oniChart" viewBox="0 0 1100 430" role="img" aria-label="Série temporal do RONI e ONI"></svg><div class="tooltip" id="oniTooltip"></div></div>
       </div>
       <div class="panel" data-panel-group="oni" data-panel="raw" hidden>
         <div class="raw-tools"><input id="oniFilter" type="search" placeholder="Filtrar por ano ou período…"><span class="raw-count" id="oniCount"></span></div>
-        <div class="table-scroll"><table><thead><tr><th data-pt="Ano" data-en="Year">Ano</th><th data-pt="Mês central" data-en="Central month">Mês central</th><th data-pt="Período" data-en="Period">Período</th><th>ONI (°C)</th><th data-pt="Classe" data-en="Class">Classe</th></tr></thead><tbody id="oniRawBody"></tbody></table></div>
+        <div class="table-scroll"><table><thead><tr><th data-pt="Ano" data-en="Year">Ano</th><th data-pt="Mês central" data-en="Central month">Mês central</th><th data-pt="Período" data-en="Period">Período</th><th id="indexValueHead">RONI (°C)</th><th data-pt="Classe" data-en="Class">Classe</th></tr></thead><tbody id="oniRawBody"></tbody></table></div>
       </div>
     </div>
-    <div class="source-box"><strong data-pt="Fonte:" data-en="Source:">Fonte:</strong> NOAA Physical Sciences Laboratory / Climate Prediction Center <a href="https://psl.noaa.gov/data/correlation/oni.data" target="_blank" rel="noopener">acessar dados ↗</a></div>
+    <div class="source-box" id="indexSourceBox"><strong data-pt="Fonte:" data-en="Source:">Fonte:</strong> NOAA Climate Prediction Center · Relative Oceanic Niño Index (RONI) <a href="https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso/roni/" target="_blank" rel="noopener">acessar dados ↗</a></div>
   </section>
 
   <section class="section" id="episodes-section">
-    <div class="section-head"><div><h2 data-pt="Episódios ENSO identificados na série ONI" data-en="ENSO episodes identified in the ONI series">Episódios ENSO identificados na série ONI</h2><p data-pt="Explore os episódios de El Niño e La Niña por intensidade. Passe o mouse sobre um evento para ver os detalhes." data-en="Explore El Niño and La Niña episodes by intensity. Hover over an event to see its details.">Explore os episódios de El Niño e La Niña por intensidade. Passe o mouse sobre um evento para ver os detalhes.</p></div></div>
+    <div class="section-head"><div><h2 data-pt="Episódios ENSO identificados na série histórica" data-en="ENSO episodes identified in the historical series">Episódios ENSO identificados na série histórica</h2><p data-pt="Compare os episódios de El Niño e La Niña identificados pelo RONI e pelo ONI. Passe o mouse sobre um evento para ver os detalhes." data-en="Compare El Niño and La Niña episodes identified by RONI and ONI. Hover over an event to see its details.">Compare os episódios de El Niño e La Niña identificados pelo RONI e pelo ONI. Passe o mouse sobre um evento para ver os detalhes.</p></div></div>
+    <div class="index-switch-wrap">
+      <div class="frequency-switch" aria-label="Índice usado para identificar episódios ENSO">
+        <button class="seg-btn active" data-episode-series="roni" type="button" data-pt="RONI · oficial atual" data-en="RONI · current official">RONI · oficial atual</button>
+        <button class="seg-btn" data-episode-series="oni" type="button" data-pt="ONI · índice tradicional" data-en="ONI · traditional index">ONI · índice tradicional</button>
+      </div>
+      <div class="index-switch-note" id="episodeSwitchNote" data-pt="Os episódios são recalculados automaticamente de acordo com o índice selecionado." data-en="Episodes are recalculated automatically according to the selected index.">Os episódios são recalculados automaticamente de acordo com o índice selecionado.</div>
+    </div>
     <div class="view-tabs" role="tablist" aria-label="Episódios ENSO">
       <button class="view-tab active" data-tabs="episodes" data-target="visual" type="button" data-pt="Visão geral" data-en="Overview">Visão geral</button>
       <button class="view-tab" data-tabs="episodes" data-target="raw" type="button" data-pt="Dados brutos" data-en="Raw data">Dados brutos</button>
@@ -285,18 +300,18 @@ footer{padding:28px 0 6px;color:var(--muted);font-size:11px;text-align:center}.f
       <div class="panel" data-panel-group="episodes" data-panel="visual">
         <div id="episodeVisual" class="episode-overview"></div>
         <div class="episode-legend-wrap">
-          <div class="episode-legend-title" data-pt="Intensidade pelo pico do ONI" data-en="Intensity by peak ONI">Intensidade pelo pico do ONI</div>
+          <div class="episode-legend-title" id="episodeLegendTitle">Intensidade pelo pico do RONI</div>
           <div class="episode-legend">
             <div class="episode-legend-row"><span class="episode-legend-phase">El Niño</span><span class="episode-legend-item elnino weak" data-pt="Fraco" data-en="Weak">Fraco</span><span class="episode-legend-item elnino moderate" data-pt="Moderado" data-en="Moderate">Moderado</span><span class="episode-legend-item elnino strong" data-pt="Forte" data-en="Strong">Forte</span><span class="episode-legend-item elnino very-strong" data-pt="Muito forte" data-en="Very strong">Muito forte</span></div>
             <div class="episode-legend-row"><span class="episode-legend-phase">La Niña</span><span class="episode-legend-item lanina weak" data-pt="Fraca" data-en="Weak">Fraca</span><span class="episode-legend-item lanina moderate" data-pt="Moderada" data-en="Moderate">Moderada</span><span class="episode-legend-item lanina strong" data-pt="Forte" data-en="Strong">Forte</span><span class="episode-legend-item lanina very-strong" data-pt="Muito forte" data-en="Very strong">Muito forte</span></div>
           </div>
-          <p class="episode-note" data-pt="Critério: pelo menos cinco janelas consecutivas com ONI ≥ +0,5°C para El Niño ou ONI ≤ −0,5°C para La Niña. A classe exibida corresponde ao maior valor absoluto de ONI atingido durante cada episódio." data-en="Criterion: at least five consecutive windows with ONI ≥ +0.5°C for El Niño or ONI ≤ −0.5°C for La Niña. The displayed class corresponds to the largest absolute ONI value reached during each episode.">Critério: pelo menos cinco janelas consecutivas com ONI ≥ +0,5°C para El Niño ou ONI ≤ −0,5°C para La Niña. A classe exibida corresponde ao maior valor absoluto de ONI atingido durante cada episódio.</p>
+          <p class="episode-note" id="episodeNote">Critério: pelo menos cinco janelas consecutivas com RONI ≥ +0,5°C para El Niño ou RONI ≤ −0,5°C para La Niña. A classe exibida corresponde ao maior valor absoluto de RONI atingido durante cada episódio.</p>
         </div>
       </div>
       <div class="panel" data-panel-group="episodes" data-panel="raw" hidden><div class="table-scroll"><table><thead><tr><th data-pt="Início" data-en="Start">Início</th><th data-pt="Fim" data-en="End">Fim</th><th data-pt="Tipo" data-en="Type">Tipo</th><th data-pt="Intensidade" data-en="Intensity">Intensidade</th><th data-pt="Pico" data-en="Peak">Pico</th><th data-pt="Janelas consecutivas" data-en="Consecutive windows">Janelas consecutivas</th></tr></thead><tbody id="episodeRawBody"></tbody></table></div></div>
     </div>
     <div id="episodeTooltip" class="episode-tooltip" role="tooltip"></div>
-    <div class="source-box"><strong data-pt="Fonte:" data-en="Source:">Fonte:</strong> série ONI da NOAA/PSL <a href="https://psl.noaa.gov/data/correlation/oni.data" target="_blank" rel="noopener" data-pt="acessar dados ↗" data-en="view data ↗">acessar dados ↗</a></div>
+    <div class="source-box" id="episodeSourceBox"><strong>Fonte:</strong> NOAA Climate Prediction Center · Relative Oceanic Niño Index (RONI) <a href="https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso/roni/" target="_blank" rel="noopener">acessar dados ↗</a></div>
   </section>
 
   <section class="section" id="regions-section">
@@ -433,8 +448,11 @@ footer{padding:28px 0 6px;color:var(--muted);font-size:11px;text-align:center}.f
         <p data-pt="El Niño e La Niña são as fases quente e fria do ENSO. Elas envolvem mudanças nas temperaturas da superfície do mar do Pacífico equatorial e uma resposta associada da circulação atmosférica tropical." data-en="El Niño and La Niña are the warm and cool phases of ENSO. They involve changes in equatorial Pacific sea-surface temperatures together with an associated response in tropical atmospheric circulation.">El Niño e La Niña são as fases quente e fria do ENSO. Elas envolvem mudanças nas temperaturas da superfície do mar do Pacífico equatorial e uma resposta associada da circulação atmosférica tropical.</p>
       </div></details>
 
+      <details class="about-details"><summary>RONI — Relative Oceanic Niño Index</summary><div class="about-copy">
+        <p data-pt="Desde fevereiro de 2026, o RONI é o índice utilizado pelo Climate Prediction Center da NOAA para o monitoramento e a previsão oficiais do ENSO. Ele usa a média móvel de três meses do índice Niño 3.4 relativo: da anomalia de SST em Niño 3.4 é subtraída a anomalia média da SST tropical entre 20°N e 20°S; em seguida, a diferença é ajustada para preservar a variância do índice Niño 3.4 original." data-en="Since February 2026, RONI has been the index used by NOAA's Climate Prediction Center for official ENSO monitoring and prediction. It uses the three-month running mean of the relative Niño 3.4 index: the mean tropical SST anomaly from 20°N to 20°S is subtracted from the Niño 3.4 SST anomaly, and the difference is then adjusted to preserve the variance of the original Niño 3.4 index.">Desde fevereiro de 2026, o RONI é o índice utilizado pelo Climate Prediction Center da NOAA para o monitoramento e a previsão oficiais do ENSO. Ele usa a média móvel de três meses do índice Niño 3.4 relativo: da anomalia de SST em Niño 3.4 é subtraída a anomalia média da SST tropical entre 20°N e 20°S; em seguida, a diferença é ajustada para preservar a variância do índice Niño 3.4 original.</p>
+      </div></details>
       <details class="about-details"><summary data-pt="Oceanic Niño Index (ONI)" data-en="Oceanic Niño Index (ONI)">Oceanic Niño Index (ONI)</summary><div class="about-copy">
-        <p data-pt="O ONI acompanha as anomalias de temperatura da superfície do mar na região Niño 3.4 usando médias móveis de três meses. Valores positivos representam aquecimento relativo e valores negativos representam resfriamento relativo. No gráfico, as faixas de ±0,5 °C, ±1,0 °C, ±1,5 °C e ±2,0 °C ajudam a visualizar a intensidade." data-en="The ONI tracks sea-surface temperature anomalies in the Niño 3.4 region using three-month running means. Positive values represent relative warming and negative values relative cooling. In the chart, ±0.5 °C, ±1.0 °C, ±1.5 °C and ±2.0 °C bands help visualize intensity.">O ONI acompanha as anomalias de temperatura da superfície do mar na região Niño 3.4 usando médias móveis de três meses. Valores positivos representam aquecimento relativo e valores negativos representam resfriamento relativo. No gráfico, as faixas de ±0,5 °C, ±1,0 °C, ±1,5 °C e ±2,0 °C ajudam a visualizar a intensidade.</p>
+        <p data-pt="O ONI é o índice tradicional utilizado historicamente pela NOAA para acompanhar o ENSO. Ele corresponde à média móvel de três meses das anomalias de temperatura da superfície do mar na região Niño 3.4. O CPC continua atualizando a série para preservar a continuidade histórica e permitir comparações com o RONI." data-en="ONI is the traditional index historically used by NOAA to track ENSO. It is the three-month running mean of sea-surface temperature anomalies in the Niño 3.4 region. CPC continues to update the series to preserve historical continuity and allow comparisons with RONI.">O ONI é o índice tradicional utilizado historicamente pela NOAA para acompanhar o ENSO. Ele corresponde à média móvel de três meses das anomalias de temperatura da superfície do mar na região Niño 3.4. O CPC continua atualizando a série para preservar a continuidade histórica e permitir comparações com o RONI.</p>
       </div></details>
 
       <details class="about-details"><summary data-pt="Regiões Niño e índices relativos" data-en="Niño regions and relative indices">Regiões Niño e índices relativos</summary><div class="about-copy">
@@ -443,7 +461,6 @@ footer{padding:28px 0 6px;color:var(--muted);font-size:11px;text-align:center}.f
         <div class="table-scroll"><table><thead><tr><th data-pt="Região" data-en="Region">Região</th><th data-pt="Área" data-en="Area">Área</th></tr></thead><tbody><tr><td>Niño 4</td><td>5°N–5°S · 160°E–150°W</td></tr><tr><td>Niño 3.4</td><td>5°N–5°S · 170°W–120°W</td></tr><tr><td>Niño 3</td><td>5°N–5°S · 150°W–90°W</td></tr><tr><td>Niño 1+2</td><td>0–10°S · 90°W–80°W</td></tr></tbody></table></div>
       </div></details>
 
-      <details class="about-details"><summary>RONI — Relative Oceanic Niño Index</summary><div class="about-copy"><p data-pt="O RONI é uma versão relativa do ONI que considera a temperatura tropical de fundo. O objetivo é representar melhor o contraste do Niño 3.4 em relação ao aquecimento ou resfriamento médio dos oceanos tropicais." data-en="RONI is a relative version of the ONI that accounts for the tropical background temperature. Its purpose is to better represent the Niño 3.4 contrast relative to the mean warming or cooling of the tropical oceans.">O RONI é uma versão relativa do ONI que considera a temperatura tropical de fundo. O objetivo é representar melhor o contraste do Niño 3.4 em relação ao aquecimento ou resfriamento médio dos oceanos tropicais.</p></div></details>
 
       <details class="about-details"><summary data-pt="Southern Oscillation Index (SOI)" data-en="Southern Oscillation Index (SOI)">Southern Oscillation Index (SOI)</summary><div class="about-copy">
         <p data-pt="O SOI representa a componente atmosférica do ENSO a partir da diferença de pressão ao nível do mar entre Tahiti e Darwin. O CPC informa que as anomalias usadas no cálculo são desvios em relação ao período-base 1981–2010." data-en="The SOI represents the atmospheric component of ENSO using the sea-level pressure difference between Tahiti and Darwin. CPC states that the anomalies used in the calculation are departures from the 1981–2010 base period.">O SOI representa a componente atmosférica do ENSO a partir da diferença de pressão ao nível do mar entre Tahiti e Darwin. O CPC informa que as anomalias usadas no cálculo são desvios em relação ao período-base 1981–2010.</p>
@@ -522,7 +539,8 @@ footer{padding:28px 0 6px;color:var(--muted);font-size:11px;text-align:center}.f
     <div class="about-content" id="sourcesContent" hidden>
       <p class="about-intro" data-pt="Conjuntos de dados, documentos e figuras oficiais utilizados no monitor." data-en="Official datasets, documents and figures used in the monitor.">Conjuntos de dados, documentos e figuras oficiais utilizados no monitor.</p>
       <ul class="source-list">
-        <li class="source-item"><strong>ONI · NOAA/PSL</strong><p data-pt="Oceanic Niño Index utilizado no gráfico histórico, nos cartões-resumo e na identificação dos episódios ENSO." data-en="Oceanic Niño Index used in the historical chart, summary cards and ENSO episode identification.">Oceanic Niño Index utilizado no gráfico histórico, nos cartões-resumo e na identificação dos episódios ENSO.</p><a href="https://psl.noaa.gov/data/correlation/oni.data" target="_blank" rel="noopener" data-pt="Acessar dados ↗" data-en="View data ↗">Acessar dados ↗</a></li>
+        <li class="source-item"><strong>RONI · NOAA/CPC</strong><p data-pt="Relative Oceanic Niño Index, referência operacional atual do CPC para monitoramento e previsão oficiais do ENSO; utilizado no cartão-resumo, no gráfico principal e na identificação dos episódios ENSO." data-en="Relative Oceanic Niño Index, CPC's current operational reference for official ENSO monitoring and prediction; used in the summary card, main chart and ENSO episode identification.">Relative Oceanic Niño Index, referência operacional atual do CPC para monitoramento e previsão oficiais do ENSO; utilizado no cartão-resumo, no gráfico principal e na identificação dos episódios ENSO.</p><a href="https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso/roni/" target="_blank" rel="noopener" data-pt="Acessar dados ↗" data-en="View data ↗">Acessar dados ↗</a></li>
+        <li class="source-item"><strong>ONI · NOAA/PSL/CPC</strong><p data-pt="Oceanic Niño Index tradicional, mantido como série comparativa e histórica." data-en="Traditional Oceanic Niño Index, retained as a comparative and historical series.">Oceanic Niño Index tradicional, mantido como série comparativa e histórica.</p><a href="https://psl.noaa.gov/data/correlation/oni.data" target="_blank" rel="noopener" data-pt="Acessar dados ↗" data-en="View data ↗">Acessar dados ↗</a></li>
         <li class="source-item"><strong data-pt="Regiões Niño · mensal" data-en="Niño regions · monthly">Regiões Niño · mensal</strong><p data-pt="Monthly Relative OISSTv2.1, período-base 1991–2020, para Niño 1+2, Niño 3, Niño 4 e Niño 3.4." data-en="Monthly Relative OISSTv2.1, 1991–2020 base period, for Niño 1+2, Niño 3, Niño 4 and Niño 3.4.">Monthly Relative OISSTv2.1, período-base 1991–2020, para Niño 1+2, Niño 3, Niño 4 e Niño 3.4.</p><a href="https://www.cpc.ncep.noaa.gov/data/indices/rel_mthsst9120.txt" target="_blank" rel="noopener" data-pt="Acessar dados ↗" data-en="View data ↗">Acessar dados ↗</a></li>
         <li class="source-item"><strong data-pt="Regiões Niño · semanal" data-en="Niño regions · weekly">Regiões Niño · semanal</strong><p data-pt="Weekly Relative OISSTv2.1, período-base 1991–2020, para as quatro regiões Niño." data-en="Weekly Relative OISSTv2.1, 1991–2020 base period, for the four Niño regions.">Weekly Relative OISSTv2.1, período-base 1991–2020, para as quatro regiões Niño.</p><a href="https://www.cpc.ncep.noaa.gov/data/indices/rel_wksst9120.txt" target="_blank" rel="noopener" data-pt="Acessar dados ↗" data-en="View data ↗">Acessar dados ↗</a></li>
         <li class="source-item"><strong>SOI · mensal</strong><p data-pt="Southern Oscillation Index mensal padronizado do CPC, calculado a partir da pressão ao nível do mar em Tahiti e Darwin." data-en="CPC monthly standardized Southern Oscillation Index calculated from sea-level pressure at Tahiti and Darwin.">Southern Oscillation Index mensal padronizado do CPC, calculado a partir da pressão ao nível do mar em Tahiti e Darwin.</p><a href="https://www.cpc.ncep.noaa.gov/data/indices/soi" target="_blank" rel="noopener" data-pt="Acessar dados ↗" data-en="View data ↗">Acessar dados ↗</a></li>
@@ -540,6 +558,7 @@ footer{padding:28px 0 6px;color:var(--muted);font-size:11px;text-align:center}.f
 
 <script>
 const SOURCE_URLS={
+  roni:'https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso/roni/',
   oni:'https://psl.noaa.gov/data/correlation/oni.data',
   monthlyRelative:'https://www.cpc.ncep.noaa.gov/data/indices/rel_mthsst9120.txt',
   weeklyRelative:'https://www.cpc.ncep.noaa.gov/data/indices/rel_wksst9120.txt',
@@ -548,6 +567,83 @@ const SOURCE_URLS={
   advisory:'https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml',
   impacts:'https://www.climate.gov/news-features/featured-images/global-impacts-el-ni%C3%B1o-and-la-ni%C3%B1a'
 };
+const FALLBACK_RONI_TEXT=`1950 -1.2 -1.1 -1.0 -1.0 -1.0 -0.7 -0.4 -0.3 -0.3 -0.4 -0.4 -0.5
+1951 -0.3 0.1 0.5 0.6 0.6 0.7 0.8 1.0 1.0 1.0 0.9 0.7
+1952 0.7 0.3 0.5 0.2 0.0 -0.4 -0.4 -0.1 0.1 0.0 -0.1 0.1
+1953 0.4 0.7 0.7 0.7 0.9 0.8 0.7 0.7 0.7 0.8 0.6 0.7
+1954 0.6 0.6 0.3 0.0 -0.2 -0.2 -0.4 -0.6 -0.5 -0.3 -0.1 -0.2
+1955 -0.1 -0.1 -0.1 -0.4 -0.4 -0.5 -0.4 -0.7 -0.9 -1.3 -1.4 -1.3
+1956 -0.8 -0.4 -0.1 -0.1 0.0 0.0 -0.1 -0.2 -0.1 -0.1 -0.1 -0.2
+1957 0.0 0.2 0.5 0.8 0.9 0.9 1.0 1.1 1.1 1.2 1.5 1.8
+1958 1.9 1.8 1.3 1.0 0.7 0.6 0.5 0.3 0.2 0.2 0.4 0.6
+1959 0.8 0.8 0.6 0.5 0.3 0.1 -0.1 -0.2 -0.1 0.0 0.2 0.2
+1960 0.2 0.2 0.2 0.3 0.2 0.1 0.1 0.2 0.3 0.1 -0.1 -0.1
+1961 0.0 0.1 0.0 0.1 0.2 0.3 0.2 -0.1 -0.2 -0.2 -0.1 0.0
+1962 0.0 0.0 0.0 -0.2 -0.2 -0.1 0.0 -0.1 -0.1 -0.3 -0.3 -0.4
+1963 -0.3 -0.1 0.0 0.1 0.0 0.4 0.7 1.1 1.1 1.1 1.1 1.1
+1964 1.0 0.6 0.1 -0.4 -0.7 -0.7 -0.6 -0.5 -0.5 -0.6 -0.6 -0.5
+1965 -0.2 0.1 0.2 0.4 0.6 1.0 1.3 1.5 1.8 1.9 2.0 1.8
+1966 1.5 1.3 1.0 0.6 0.3 0.2 0.3 0.2 0.0 0.0 -0.1 -0.2
+1967 -0.3 -0.2 -0.3 -0.3 -0.1 0.2 0.2 0.0 -0.1 -0.1 0.0 0.0
+1968 -0.2 -0.4 -0.3 -0.3 0.1 0.3 0.6 0.5 0.4 0.6 0.7 1.0
+1969 1.1 1.0 0.7 0.4 0.4 0.3 0.3 0.3 0.6 0.7 0.8 0.7
+1970 0.5 0.2 0.2 0.2 0.1 -0.2 -0.5 -0.6 -0.5 -0.6 -0.5 -0.8
+1971 -0.9 -1.0 -0.8 -0.6 -0.5 -0.4 -0.3 -0.2 -0.3 -0.4 -0.4 -0.4
+1972 -0.2 0.0 0.3 0.5 0.7 0.9 1.1 1.4 1.6 1.8 2.0 1.9
+1973 1.7 1.3 0.6 -0.2 -0.7 -1.0 -1.1 -1.2 -1.3 -1.6 -1.9 -1.9
+1974 -1.6 -1.3 -1.0 -0.8 -0.6 -0.5 -0.3 -0.2 -0.2 -0.4 -0.6 -0.3
+1975 -0.1 -0.1 -0.3 -0.4 -0.6 -0.7 -0.9 -0.9 -1.0 -0.9 -1.0 -1.1
+1976 -1.0 -0.6 -0.3 -0.1 0.0 0.3 0.5 0.7 0.9 1.0 1.1 1.1
+1977 1.0 0.9 0.5 0.3 0.3 0.5 0.5 0.5 0.6 0.9 1.1 1.1
+1978 1.0 0.7 0.3 -0.1 -0.3 -0.2 -0.3 -0.3 -0.3 -0.1 0.2 0.3
+1979 0.3 0.3 0.3 0.2 0.1 0.0 0.0 0.3 0.4 0.5 0.5 0.6
+1980 0.7 0.5 0.3 0.1 0.3 0.3 0.1 -0.1 -0.2 -0.1 0.1 0.1
+1981 0.0 -0.2 -0.3 -0.2 -0.3 -0.3 -0.2 -0.2 0.0 -0.2 -0.2 -0.1
+1982 0.1 0.2 0.2 0.5 0.7 0.8 0.9 1.1 1.6 2.0 2.2 2.4
+1983 2.4 2.2 1.7 1.3 0.9 0.5 0.0 -0.2 -0.6 -0.9 -1.1 -1.0
+1984 -0.6 -0.5 -0.5 -0.6 -0.6 -0.5 -0.3 -0.2 -0.3 -0.6 -0.9 -0.9
+1985 -0.8 -0.7 -0.7 -0.8 -0.8 -0.5 -0.3 -0.2 -0.2 -0.2 -0.1 -0.2
+1986 -0.3 -0.3 -0.2 -0.1 -0.1 0.0 0.3 0.6 0.8 1.0 1.2 1.4
+1987 1.5 1.4 1.1 0.9 0.8 0.9 1.1 1.3 1.3 1.2 1.0 0.8
+1988 0.5 0.1 -0.4 -0.9 -1.5 -1.7 -1.6 -1.4 -1.4 -1.7 -1.9 -1.9
+1989 -1.6 -1.4 -1.1 -0.9 -0.6 -0.4 -0.4 -0.4 -0.3 -0.2 -0.1 0.1
+1990 0.3 0.3 0.3 0.3 0.2 0.2 0.2 0.3 0.3 0.3 0.3 0.4
+1991 0.6 0.5 0.4 0.4 0.6 0.7 0.9 0.8 1.0 1.2 1.7 2.0
+1992 2.1 2.1 1.9 1.8 1.4 0.9 0.5 0.3 0.1 0.1 0.1 0.4
+1993 0.6 0.7 0.9 1.1 1.0 0.8 0.5 0.5 0.5 0.5 0.4 0.4
+1994 0.3 0.2 0.2 0.3 0.4 0.4 0.5 0.6 0.8 1.0 1.2 1.3
+1995 1.2 0.9 0.6 0.2 -0.1 -0.2 -0.4 -0.6 -0.8 -0.9 -1.0 -1.0
+1996 -0.9 -0.7 -0.6 -0.4 -0.2 -0.2 -0.2 -0.2 -0.2 -0.2 -0.3 -0.3
+1997 -0.2 0.0 0.2 0.5 0.8 1.2 1.5 1.8 2.1 2.2 2.3 2.3
+1998 2.1 1.8 1.2 0.8 0.1 -0.5 -1.0 -1.1 -1.2 -1.3 -1.5 -1.6
+1999 -1.6 -1.3 -1.0 -0.9 -0.8 -0.8 -0.8 -0.9 -0.9 -1.1 -1.3 -1.6
+2000 -1.5 -1.3 -1.1 -0.9 -0.7 -0.5 -0.3 -0.3 -0.4 -0.5 -0.8 -0.8
+2001 -0.8 -0.6 -0.5 -0.4 -0.3 -0.1 0.0 0.0 0.0 -0.2 -0.3 -0.3
+2002 -0.2 0.0 0.0 0.1 0.2 0.4 0.6 0.8 1.0 1.2 1.3 1.1
+2003 0.9 0.5 0.2 -0.2 -0.3 -0.2 0.0 0.1 0.2 0.2 0.3 0.2
+2004 0.2 0.1 0.1 0.1 0.2 0.4 0.5 0.7 0.7 0.7 0.7 0.7
+2005 0.5 0.4 0.3 0.3 0.2 0.1 -0.1 -0.1 0.0 -0.2 -0.5 -0.8
+2006 -0.9 -0.9 -0.7 -0.5 -0.2 0.0 0.1 0.4 0.6 0.7 0.9 0.9
+2007 0.6 0.2 -0.1 -0.3 -0.4 -0.4 -0.5 -0.8 -1.0 -1.3 -1.5 -1.6
+2008 -1.7 -1.6 -1.4 -1.0 -0.8 -0.5 -0.2 -0.2 -0.3 -0.4 -0.6 -0.9
+2009 -1.0 -0.9 -0.7 -0.4 0.0 0.2 0.4 0.4 0.5 0.9 1.3 1.5
+2010 1.4 1.1 0.7 0.1 -0.5 -1.0 -1.2 -1.4 -1.5 -1.6 -1.6 -1.5
+2011 -1.4 -1.2 -1.0 -0.8 -0.5 -0.3 -0.3 -0.4 -0.7 -0.9 -1.0 -1.0
+2012 -0.8 -0.6 -0.5 -0.4 -0.3 0.0 0.3 0.4 0.4 0.2 0.0 -0.3
+2013 -0.5 -0.6 -0.5 -0.4 -0.5 -0.5 -0.5 -0.4 -0.4 -0.2 -0.2 -0.3
+2014 -0.4 -0.4 -0.1 0.1 0.2 0.0 -0.1 -0.1 0.1 0.4 0.5 0.6
+2015 0.5 0.5 0.6 0.7 0.9 1.0 1.3 1.5 1.8 2.0 2.2 2.3
+2016 2.1 1.8 1.3 0.7 0.1 -0.4 -0.7 -0.8 -0.9 -1.0 -1.0 -0.9
+2017 -0.6 -0.4 -0.2 -0.1 0.0 0.0 -0.2 -0.5 -0.6 -0.8 -1.0 -1.1
+2018 -1.1 -1.0 -0.9 -0.7 -0.3 0.0 0.1 0.2 0.4 0.6 0.8 0.8
+2019 0.7 0.6 0.6 0.5 0.4 0.2 0.0 -0.1 0.0 0.2 0.3 0.2
+2020 0.1 0.1 0.0 -0.3 -0.5 -0.7 -0.8 -0.8 -1.2 -1.4 -1.5 -1.4
+2021 -1.3 -1.2 -1.1 -0.9 -0.7 -0.6 -0.6 -0.8 -0.9 -1.1 -1.2 -1.2
+2022 -1.2 -1.1 -1.2 -1.3 -1.2 -0.9 -0.9 -0.9 -1.1 -1.1 -1.1 -1.0
+2023 -0.9 -0.7 -0.5 -0.3 0.0 0.3 0.5 0.8 1.0 1.3 1.4 1.4
+2024 1.1 0.8 0.4 0.0 -0.3 -0.4 -0.5 -0.6 -0.7 -0.8 -0.9 -1.0
+2025 -1.1 -0.8 -0.7 -0.5 -0.5 -0.4 -0.4 -0.6 -0.8 -0.9 -1.0 -1.0
+2026 -0.9 -0.8 -0.4 0.0 0.5 1.0`;
 const FALLBACK_ONI=[-1.53,-1.34,-1.16,-1.18,-1.07,-0.85,-0.54,-0.42,-0.39,-0.44,-0.6,-0.8,-0.82,-0.54,-0.17,0.18,0.36,0.58,0.7,0.89,0.99,1.15,1.04,0.81,0.53,0.37,0.34,0.29,0.2,0.0,-0.08,0.0,0.15,0.1,0.04,0.15,0.4,0.6,0.63,0.66,0.75,0.77,0.75,0.73,0.78,0.84,0.84,0.81,0.76,0.47,-0.05,-0.41,-0.54,-0.5,-0.64,-0.84,-0.9,-0.77,-0.73,-0.66,-0.68,-0.62,-0.69,-0.8,-0.79,-0.72,-0.68,-0.75,-1.09,-1.42,-1.67,-1.47,-1.11,-0.76,-0.63,-0.54,-0.52,-0.51,-0.57,-0.55,-0.46,-0.42,-0.43,-0.43,-0.25,0.06,0.41,0.72,0.92,1.11,1.25,1.32,1.33,1.39,1.53,1.74,1.81,1.66,1.27,0.93,0.74,0.64,0.57,0.43,0.39,0.44,0.5,0.61,0.61,0.62,0.52,0.33,0.2,-0.07,-0.18,-0.28,-0.09,-0.03,0.05,-0.04,-0.1,-0.1,-0.07,0.03,0.02,0.03,0.13,0.24,0.27,0.2,0.12,0.05,0.04,0.03,0.04,0.09,0.23,0.27,0.14,-0.13,-0.3,-0.26,-0.19,-0.16,-0.24,-0.22,-0.2,-0.26,-0.28,-0.2,-0.04,-0.07,-0.11,-0.22,-0.31,-0.43,-0.4,-0.15,0.15,0.27,0.31,0.52,0.86,1.14,1.22,1.29,1.37,1.31,1.07,0.62,0.12,-0.33,-0.58,-0.58,-0.6,-0.66,-0.76,-0.8,-0.82,-0.78,-0.59,-0.28,-0.07,0.18,0.46,0.83,1.22,1.54,1.85,1.98,1.97,1.72,1.37,1.17,0.98,0.66,0.35,0.24,0.24,0.12,-0.05,-0.1,-0.18,-0.3,-0.41,-0.48,-0.53,-0.45,-0.24,-0.0,0.05,-0.16,-0.3,-0.38,-0.34,-0.44,-0.64,-0.74,-0.62,-0.44,-0.04,0.28,0.58,0.53,0.45,0.55,0.73,0.98,1.13,1.09,0.95,0.77,0.61,0.43,0.36,0.51,0.79,0.86,0.81,0.63,0.51,0.34,0.29,0.19,0.04,-0.3,-0.63,-0.76,-0.77,-0.74,-0.86,-1.15,-1.36,-1.38,-1.12,-0.85,-0.73,-0.74,-0.8,-0.77,-0.82,-0.85,-0.96,-0.9,-0.71,-0.35,0.06,0.41,0.67,0.92,1.13,1.37,1.58,1.84,2.09,2.12,1.84,1.25,0.54,-0.1,-0.54,-0.87,-1.11,-1.28,-1.45,-1.71,-1.95,-2.03,-1.84,-1.55,-1.23,-1.03,-0.91,-0.77,-0.53,-0.37,-0.41,-0.61,-0.75,-0.64,-0.54,-0.57,-0.65,-0.73,-0.83,-0.98,-1.13,-1.2,-1.37,-1.43,-1.55,-1.65,-1.56,-1.17,-0.73,-0.47,-0.28,-0.05,0.18,0.35,0.62,0.81,0.86,0.85,0.71,0.64,0.34,0.23,0.21,0.34,0.35,0.42,0.57,0.73,0.81,0.79,0.69,0.42,0.06,-0.18,-0.31,-0.29,-0.36,-0.42,-0.42,-0.29,-0.08,0.0,0.03,0.07,0.2,0.28,0.23,0.05,0.04,0.17,0.33,0.45,0.52,0.64,0.59,0.46,0.34,0.38,0.48,0.46,0.25,0.03,-0.07,0.02,0.11,-0.01,-0.26,-0.5,-0.47,-0.37,-0.26,-0.29,-0.3,-0.25,-0.16,-0.13,-0.15,-0.08,-0.05,0.07,0.19,0.47,0.66,0.72,0.79,1.07,1.58,1.97,2.18,2.23,2.18,1.92,1.54,1.29,1.06,0.72,0.31,-0.08,-0.46,-0.81,-1.0,-0.91,-0.6,-0.42,-0.34,-0.43,-0.51,-0.45,-0.3,-0.16,-0.24,-0.56,-0.92,-1.14,-1.04,-0.85,-0.77,-0.78,-0.78,-0.63,-0.49,-0.46,-0.4,-0.35,-0.27,-0.36,-0.49,-0.47,-0.31,-0.2,-0.12,-0.04,0.22,0.44,0.71,0.94,1.14,1.22,1.23,1.19,1.06,0.95,0.97,1.22,1.51,1.7,1.65,1.48,1.25,1.11,0.81,0.54,0.14,-0.31,-0.88,-1.3,-1.3,-1.11,-1.19,-1.48,-1.8,-1.85,-1.69,-1.43,-1.08,-0.83,-0.58,-0.4,-0.31,-0.27,-0.24,-0.22,-0.16,-0.05,0.14,0.21,0.28,0.29,0.29,0.31,0.33,0.38,0.39,0.35,0.4,0.41,0.41,0.26,0.22,0.26,0.45,0.64,0.73,0.64,0.62,0.79,1.21,1.53,1.71,1.63,1.48,1.29,1.06,0.73,0.37,0.09,-0.13,-0.25,-0.28,-0.13,0.09,0.3,0.5,0.67,0.7,0.57,0.32,0.25,0.15,0.1,0.04,0.06,0.06,0.07,0.17,0.31,0.42,0.41,0.44,0.43,0.55,0.74,1.01,1.09,0.96,0.72,0.53,0.3,0.14,-0.03,-0.24,-0.54,-0.81,-0.97,-1.0,-0.98,-0.9,-0.75,-0.59,-0.39,-0.31,-0.3,-0.27,-0.32,-0.35,-0.4,-0.45,-0.49,-0.5,-0.36,-0.1,0.28,0.75,1.22,1.6,1.9,2.14,2.33,2.4,2.39,2.24,1.93,1.44,0.99,0.45,-0.13,-0.78,-1.12,-1.31,-1.35,-1.48,-1.57,-1.55,-1.3,-1.07,-0.98,-1.02,-1.04,-1.1,-1.11,-1.16,-1.26,-1.46,-1.65,-1.66,-1.41,-1.07,-0.81,-0.71,-0.64,-0.55,-0.51,-0.55,-0.63,-0.75,-0.74,-0.68,-0.52,-0.44,-0.34,-0.25,-0.12,-0.08,-0.13,-0.19,-0.29,-0.35,-0.31,-0.15,0.03,0.09,0.2,0.43,0.65,0.79,0.86,1.01,1.21,1.31,1.14,0.92,0.63,0.38,-0.04,-0.26,-0.16,0.08,0.21,0.26,0.29,0.35,0.35,0.37,0.31,0.23,0.17,0.17,0.28,0.47,0.64,0.7,0.67,0.66,0.69,0.64,0.58,0.45,0.43,0.29,0.11,-0.06,-0.14,-0.11,-0.29,-0.57,-0.84,-0.85,-0.77,-0.57,-0.37,-0.14,-0.03,0.1,0.3,0.54,0.77,0.94,0.94,0.66,0.22,-0.12,-0.32,-0.38,-0.47,-0.56,-0.81,-1.07,-1.34,-1.5,-1.6,-1.64,-1.52,-1.29,-1.01,-0.84,-0.61,-0.37,-0.23,-0.24,-0.35,-0.55,-0.73,-0.85,-0.79,-0.61,-0.33,0.01,0.28,0.45,0.58,0.71,1.01,1.36,1.56,1.5,1.22,0.84,0.35,-0.17,-0.66,-1.05,-1.35,-1.56,-1.64,-1.64,-1.54,-1.31,-1.04,-0.8,-0.62,-0.46,-0.37,-0.43,-0.58,-0.79,-0.96,-1.02,-0.92,-0.72,-0.57,-0.46,-0.36,-0.17,0.06,0.3,0.41,0.41,0.31,0.13,-0.1,-0.29,-0.29,-0.21,-0.19,-0.27,-0.34,-0.35,-0.28,-0.21,-0.13,-0.1,-0.15,-0.28,-0.32,-0.14,0.15,0.31,0.23,0.1,0.11,0.28,0.54,0.71,0.77,0.69,0.61,0.65,0.81,1.02,1.25,1.57,1.91,2.21,2.47,2.64,2.75,2.63,2.28,1.71,1.05,0.49,0.0,-0.31,-0.5,-0.58,-0.64,-0.6,-0.45,-0.19,-0.02,0.18,0.31,0.4,0.39,0.19,-0.07,-0.34,-0.6,-0.77,-0.86,-0.77,-0.71,-0.57,-0.39,-0.13,0.06,0.14,0.27,0.53,0.81,0.97,0.92,0.89,0.86,0.84,0.77,0.64,0.52,0.33,0.19,0.23,0.39,0.58,0.66,0.64,0.63,0.53,0.3,0.01,-0.23,-0.36,-0.53,-0.85,-1.12,-1.2,-1.08,-0.91,-0.79,-0.71,-0.55,-0.39,-0.3,-0.35,-0.45,-0.63,-0.76,-0.91,-0.87,-0.82,-0.79,-0.86,-0.95,-0.9,-0.78,-0.76,-0.87,-0.97,-0.94,-0.85,-0.71,-0.54,-0.29,-0.02,0.27,0.57,0.84,1.12,1.37,1.6,1.83,1.99,2.06,1.92,1.62,1.26,0.82,0.49,0.22,0.08,-0.07,-0.17,-0.21,-0.3,-0.42,-0.45,-0.24,-0.06,0.02,-0.02,-0.04,-0.14,-0.28,-0.4,-0.51,-0.55,-0.54,-0.37,-0.14,0.13,0.51,0.98,1.4];
 const MONTHS_PT=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const MONTHS_EN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -640,10 +736,10 @@ const FALLBACK_SOI_STANDARDIZED_TEXT=`1951 1.5 0.9 -0.1 -0.3 -0.7 0.2 -1.0 -0.2 
 2025 0.2 0.5 1.7 0.5 0.4 0.3 0.6 0.4 0.0 1.1 1.1 -0.0
 2026 1.1 1.4 1.2 -0.6 -0.9 -1.4 -2.4 -999.9 -999.9 -999.9 -999.9 -999.9`;
 
-let oniSeries=[], monthlyRelative=[], weeklyRelative=[], soiMonthly=[], soi3m=[], cpcAdvisory=null;
+let roniSeries=[], oniSeries=[], monthlyRelative=[], weeklyRelative=[], soiMonthly=[], soi3m=[], cpcAdvisory=null;
 let loadInProgress=false;
 const AUTO_REFRESH_MS=6*60*60*1000;
-let selectedRegion='n34', selectedFrequency='monthly', selectedSoiFrequency='monthly';
+let selectedRegion='n34', selectedFrequency='monthly', selectedSoiFrequency='monthly', selectedIndexSeries='roni', selectedEpisodeSeries='roni';
 let oniView={zoom:1,center:.5}, regionView={zoom:1,center:.5}, soiView={zoom:1,center:.5};
 let panState={oni:null,region:null,soi:null};
 
@@ -682,7 +778,7 @@ function applyLanguage(){
   document.getElementById('soiFilter').placeholder=tx('Filtrar por ano…','Filter by year…');
   updateCpcAlert();
   updateThemeButton();
-  if(oniSeries.length){updateSummary();renderOniRaw(document.getElementById('oniFilter').value.trim().toLowerCase());renderEpisodes();drawOniChart()}
+  if(roniSeries.length||oniSeries.length){updateSummary();renderIndexRaw(document.getElementById('oniFilter').value.trim().toLowerCase());renderEpisodes();drawIndexChart();updateIndexSource()}
   if(monthlyRelative.length||weeklyRelative.length){updateN34Status();renderRegion()}
   if(soiMonthly.length||soi3m.length){updateSoiStatus();renderSoi();}
   updateImpactFigure();
@@ -695,7 +791,7 @@ if(savedTheme==='dark'||savedTheme==='light')document.documentElement.dataset.th
 else document.documentElement.dataset.theme='light';
 function updateThemeButton(){const dark=document.documentElement.dataset.theme==='dark';document.getElementById('themeIcon').textContent=dark?'☀':'☾';document.getElementById('themeLabel').textContent=dark?tx('Modo claro','Light mode'):tx('Modo escuro','Dark mode')}
 updateThemeButton();applyLanguage();
-document.getElementById('themeToggle').addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('enso-theme',next);updateThemeButton();if(oniSeries.length)drawOniChart();renderRegion();renderSoi()});
+document.getElementById('themeToggle').addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('enso-theme',next);updateThemeButton();if(roniSeries.length||oniSeries.length)drawIndexChart();renderRegion();renderSoi()});
 
 function classify(v){const a=Math.abs(v);if(a<.5)return{label:tx('Neutro','Neutral'),cls:'neutral'};const side=v>0?'El Niño':'La Niña';let level=tx('Fraco','Weak');if(a>=2)level=tx('Muito Forte','Very Strong');else if(a>=1.5)level=tx('Forte','Strong');else if(a>=1)level=tx('Moderado','Moderate');return{label:`${side} ${level}`,cls:v>0?'warm':'cold'}}
 function fmt(v,d=2){const n=Number(v).toFixed(d);return `${v>0?'+':''}${currentLang==='pt'?n.replace('.',','):n}°C`}
@@ -704,6 +800,24 @@ function monthLabel(year,month){return `${months()[month-1]} ${year}`}
 function isoDate(y,m,d){return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`}
 function parseOniText(text){const rows=[];text.split(/\r?\n/).forEach(line=>{const p=line.trim().split(/\s+/);if(p.length>=13&&/^\d{4}$/.test(p[0])){const y=+p[0];for(let m=0;m<12;m++){const v=+p[m+1];if(Number.isFinite(v)&&v>-90)rows.push({year:y,monthIndex:m,value:v,period:periodLabel(y,m)})}}});return rows}
 function fallbackOni(){return FALLBACK_ONI.map((value,i)=>{const year=1950+Math.floor(i/12),monthIndex=i%12;return{year,monthIndex,value,period:periodLabel(year,monthIndex)}})}
+function parseRoniText(text){
+  let raw=String(text||'');
+  try{if(/<[^>]+>/.test(raw)){const doc=new DOMParser().parseFromString(raw,'text/html');raw=doc.body?.innerText||raw}}catch(_e){}
+  raw=raw.replace(/\|/g,' ').replace(/ /g,' ');
+  const out=[],seen=new Set();
+  raw.split(/\r?\n/).forEach(line=>{
+    const m=line.trim().match(/^((?:19|20)\d{2})\s+(.+)$/);if(!m)return;
+    const year=+m[1],vals=(m[2].match(/-?\d+(?:\.\d+)?/g)||[]).map(Number);
+    if(vals.length<6)return;
+    vals.slice(0,12).forEach((value,monthIndex)=>{if(!Number.isFinite(value)||Math.abs(value)>10)return;const key=`${year}-${monthIndex}`;if(seen.has(key))return;seen.add(key);out.push({year,monthIndex,value,period:periodLabel(year,monthIndex)})});
+  });
+  return out.sort((a,b)=>a.year-b.year||a.monthIndex-b.monthIndex);
+}
+function fallbackRoni(){return parseRoniText(FALLBACK_RONI_TEXT)}
+function currentIndexSeries(){return selectedIndexSeries==='roni'?roniSeries:oniSeries}
+function currentIndexLabel(){return selectedIndexSeries==='roni'?'RONI':'ONI'}
+function updateIndexSource(){const el=document.getElementById('indexSourceBox');if(!el)return;if(selectedIndexSeries==='roni')el.innerHTML=`<strong>${tx('Fonte:','Source:')}</strong> NOAA Climate Prediction Center · Relative Oceanic Niño Index (RONI) <a href="${SOURCE_URLS.roni}" target="_blank" rel="noopener">${tx('acessar dados ↗','view data ↗')}</a>`;else el.innerHTML=`<strong>${tx('Fonte:','Source:')}</strong> NOAA Physical Sciences Laboratory / Climate Prediction Center · Oceanic Niño Index (ONI) <a href="${SOURCE_URLS.oni}" target="_blank" rel="noopener">${tx('acessar dados ↗','view data ↗')}</a>`}
+
 function parseMonthlyRelative(text){const rows=[];text.split(/\r?\n/).forEach(line=>{const p=line.trim().split(/\s+/);if(p.length>=6&&/^\d{4}$/.test(p[0])){const year=+p[0],month=+p[1],n12=+p[2],n3=+p[3],n4=+p[4],n34=+p[5];if([n12,n3,n4,n34].every(Number.isFinite))rows.push({year,month,date:isoDate(year,month,1),label:monthLabel(year,month),n12,n3,n4,n34})}});return rows}
 function parseWeeklyRelative(text){const rows=[];text.split(/\r?\n/).forEach(line=>{const p=line.trim().split(/\s+/);if(p.length>=5){const m=p[0].match(/^(\d{2})([A-Z]{3})(\d{4})$/);if(m){const day=+m[1],month=WEEK_MONTHS[m[2]],year=+m[3],n12=+p[1],n3=+p[2],n34=+p[3],n4=+p[4];if(month&&[n12,n3,n34,n4].every(Number.isFinite))rows.push({year,month,day,date:isoDate(year,month,day),label:`${String(day).padStart(2,'0')} ${MONTHS[month-1]} ${year}`,n12,n3,n34,n4})}}});return rows}
 function parseSoiBlock(text,standardizedOnly=false){
@@ -833,8 +947,10 @@ async function loadData(){
   if(loadInProgress)return;
   loadInProgress=true;
   try{
-    try{const text=await fetchText(SOURCE_URLS.oni);const parsed=parseOniText(text);oniSeries=parsed.length>500?parsed:fallbackOni()}catch(e){oniSeries=fallbackOni()}
-    renderOniRaw();renderEpisodes();drawOniChart();
+    const [rr,oo]=await Promise.allSettled([fetchText(SOURCE_URLS.roni),fetchText(SOURCE_URLS.oni)]);
+    if(rr.status==='fulfilled'){const parsed=parseRoniText(rr.value);roniSeries=parsed.length>500?parsed:fallbackRoni()}else roniSeries=fallbackRoni();
+    if(oo.status==='fulfilled'){const parsed=parseOniText(oo.value);oniSeries=parsed.length>500?parsed:fallbackOni()}else oniSeries=fallbackOni();
+    renderIndexRaw();renderEpisodes();drawIndexChart();updateIndexSource();
 
     const [m,w,sm,s3,adv]=await Promise.allSettled([
       fetchText(SOURCE_URLS.monthlyRelative),
@@ -860,38 +976,34 @@ async function loadData(){
   }
 }
 function updateSummary(){
-  if(!oniSeries.length)return;
-  const last=oniSeries.at(-1),c=classify(last.value),sc=document.getElementById('statusClass');
+  const primary=roniSeries.length?roniSeries:oniSeries;if(!primary.length)return;
+  const last=primary.at(-1),c=classify(last.value),sc=document.getElementById('statusClass');
   if(cpcAdvisory&&cpcAdvisory.status){
-    sc.textContent=cpcStatusMain(cpcAdvisory.status);
-    sc.className=`value ${cpcStatusClass(cpcAdvisory.status)}`;
-    const date=cpcDateLabel(cpcAdvisory.date);
-    document.getElementById('statusClassSub').textContent=`CPC · ${cpcAdvisory.status}${date?` · ${date}`:''}`;
+    sc.textContent=cpcStatusMain(cpcAdvisory.status);sc.className=`value ${cpcStatusClass(cpcAdvisory.status)}`;
+    const date=cpcDateLabel(cpcAdvisory.date);document.getElementById('statusClassSub').textContent=`CPC · ${cpcAdvisory.status}${date?` · ${date}`:''}`;
   }else{
-    sc.textContent=c.label;
-    sc.className=`value ${c.cls}`;
-    document.getElementById('statusClassSub').textContent=`${tx('Estimativa pelo ONI','ONI-based estimate')} · ${last.period}`;
+    sc.textContent=c.label;sc.className=`value ${c.cls}`;document.getElementById('statusClassSub').textContent=`${tx('Estimativa pelo RONI','RONI-based estimate')} · ${last.period}`;
   }
-  const so=document.getElementById('statusOni');
-  so.textContent=fmt(last.value);so.className=`value ${c.cls}`;
-  document.getElementById('statusOniSub').textContent=last.period;
+  const sr=document.getElementById('statusRoni');if(sr){sr.textContent=fmt(last.value);sr.className=`value ${c.cls}`;document.getElementById('statusRoniSub').textContent=`${last.period} · CPC`}
 }
 function updateN34Status(){const data=monthlyRelative;if(!data.length)return;const d=data.at(-1),v=d.n34,c=v>=.5?'warm':v<=-.5?'cold':'neutral',el=document.getElementById('statusN34');el.textContent=fmt(v);el.className=`value ${c}`;document.getElementById('statusN34Sub').textContent=`${d.label} · ${tx('relativo','relative')}`}
 function updateSoiStatus(){const data=soi3m.length?soi3m:soiMonthly;if(!data.length)return;const d=data.at(-1),v=d.value,el=document.getElementById('statusSoi');el.textContent=`${v>0?'+':''}${currentLang==='pt'?v.toFixed(1).replace('.',','):v.toFixed(1)}`;el.className=`value ${v<0?'warm':v>0?'cold':'neutral'}`;const direction=v<0?tx('Sinal atmosférico associado ao El Niño','Atmospheric signal associated with El Niño'):v>0?tx('Sinal atmosférico associado à La Niña','Atmospheric signal associated with La Niña'):tx('Sinal atmosférico próximo da neutralidade','Atmospheric signal near neutral');document.getElementById('statusSoiSub').textContent=`${direction} · ${months()[d.month-1]} ${d.year}`}
-function renderOniRaw(filter=''){const rows=oniSeries.filter(d=>!filter||String(d.year).includes(filter)||d.period.toLowerCase().includes(filter));document.getElementById('oniCount').textContent=`${rows.length} ${tx('registros','records')}`;document.getElementById('oniRawBody').innerHTML=rows.map(d=>{const c=classify(d.value);return `<tr><td>${d.year}</td><td>${months()[d.monthIndex]}</td><td>${d.period}</td><td class="${c.cls}">${fmt(d.value)}</td><td>${c.label}</td></tr>`}).join('')}
-document.getElementById('oniFilter').addEventListener('input',e=>renderOniRaw(e.target.value.trim().toLowerCase()));
+function renderIndexRaw(filter=''){const data=currentIndexSeries(),label=currentIndexLabel(),rows=data.filter(d=>!filter||String(d.year).includes(filter)||d.period.toLowerCase().includes(filter));document.getElementById('oniCount').textContent=`${rows.length} ${tx('registros','records')}`;document.getElementById('indexValueHead').textContent=`${label} (°C)`;document.getElementById('oniRawBody').innerHTML=rows.map(d=>{const c=classify(d.value);return `<tr><td>${d.year}</td><td>${months()[d.monthIndex]}</td><td>${d.period}</td><td class="${c.cls}">${fmt(d.value)}</td><td>${c.label}</td></tr>`}).join('')}
+document.getElementById('oniFilter').addEventListener('input',e=>renderIndexRaw(e.target.value.trim().toLowerCase()));
+document.querySelectorAll('[data-index-series]').forEach(b=>b.addEventListener('click',()=>{selectedIndexSeries=b.dataset.indexSeries;oniView={zoom:1,center:.5};document.getElementById('oniZoomLabel').textContent='1×';document.querySelectorAll('[data-index-series]').forEach(x=>x.classList.toggle('active',x===b));renderIndexRaw(document.getElementById('oniFilter').value.trim().toLowerCase());drawIndexChart();updateIndexSource()}));
+document.querySelectorAll('[data-episode-series]').forEach(b=>b.addEventListener('click',()=>{selectedEpisodeSeries=b.dataset.episodeSeries;document.querySelectorAll('[data-episode-series]').forEach(x=>x.classList.toggle('active',x===b));renderEpisodes()}));
 
 function visibleSlice(data,view){if(!data.length)return{slice:[],start:0,end:0};const n=data.length,visible=Math.max(12,Math.round(n/view.zoom)),centerIndex=view.center*(n-1);let start=Math.round(centerIndex-visible/2);start=Math.max(0,Math.min(n-visible,start));const end=Math.min(n,start+visible);return{slice:data.slice(start,end),start,end}}
-function setZoom(which,factor){const view=which==='oni'?oniView:which==='region'?regionView:soiView;view.zoom=Math.max(1,Math.min(12,view.zoom*factor));if(which==='oni'){document.getElementById('oniZoomLabel').textContent=`${view.zoom.toFixed(view.zoom%1?1:0)}×`;drawOniChart()}else if(which==='region'){document.getElementById('regionZoomLabel').textContent=`${view.zoom.toFixed(view.zoom%1?1:0)}×`;renderRegionChart()}else{document.getElementById('soiZoomLabel').textContent=`${view.zoom.toFixed(view.zoom%1?1:0)}×`;renderSoiChart()}}
-function resetZoom(which){const view=which==='oni'?oniView:which==='region'?regionView:soiView;view.zoom=1;view.center=.5;if(which==='oni'){document.getElementById('oniZoomLabel').textContent='1×';drawOniChart()}else if(which==='region'){document.getElementById('regionZoomLabel').textContent='1×';renderRegionChart()}else{document.getElementById('soiZoomLabel').textContent='1×';renderSoiChart()}}
+function setZoom(which,factor){const view=which==='oni'?oniView:which==='region'?regionView:soiView;view.zoom=Math.max(1,Math.min(12,view.zoom*factor));if(which==='oni'){document.getElementById('oniZoomLabel').textContent=`${view.zoom.toFixed(view.zoom%1?1:0)}×`;drawIndexChart()}else if(which==='region'){document.getElementById('regionZoomLabel').textContent=`${view.zoom.toFixed(view.zoom%1?1:0)}×`;renderRegionChart()}else{document.getElementById('soiZoomLabel').textContent=`${view.zoom.toFixed(view.zoom%1?1:0)}×`;renderSoiChart()}}
+function resetZoom(which){const view=which==='oni'?oniView:which==='region'?regionView:soiView;view.zoom=1;view.center=.5;if(which==='oni'){document.getElementById('oniZoomLabel').textContent='1×';drawIndexChart()}else if(which==='region'){document.getElementById('regionZoomLabel').textContent='1×';renderRegionChart()}else{document.getElementById('soiZoomLabel').textContent='1×';renderSoiChart()}}
 document.getElementById('oniZoomIn').onclick=()=>setZoom('oni',1.6);document.getElementById('oniZoomOut').onclick=()=>setZoom('oni',1/1.6);document.getElementById('oniZoomReset').onclick=()=>resetZoom('oni');
 document.getElementById('regionZoomIn').onclick=()=>setZoom('region',1.6);document.getElementById('regionZoomOut').onclick=()=>setZoom('region',1/1.6);document.getElementById('regionZoomReset').onclick=()=>resetZoom('region');
 document.getElementById('soiZoomIn').onclick=()=>setZoom('soi',1.6);document.getElementById('soiZoomOut').onclick=()=>setZoom('soi',1/1.6);document.getElementById('soiZoomReset').onclick=()=>resetZoom('soi');
 
 function bandTextColor(fillClass){if(fillClass==='elnino-weak'||fillClass==='elnino-moderate')return '#6b3512';if(fillClass==='lanina-weak'||fillClass==='lanina-moderate')return '#174766';return '#ffffff'}
-function drawOniChart(){
-  const svg=document.getElementById('oniChart');if(!svg||!oniSeries.length)return;
-  const {slice:data,start}=visibleSlice(oniSeries,oniView);const W=1100,H=430,L=110,R=20,T=18,B=54,plotW=W-L-R,plotH=H-T-B,yMin=-3,yMax=3;
+function drawIndexChart(){
+  const svg=document.getElementById('oniChart'),full=currentIndexSeries(),label=currentIndexLabel();if(!svg||!full.length)return;
+  const {slice:data,start}=visibleSlice(full,oniView);const W=1100,H=430,L=110,R=20,T=18,B=54,plotW=W-L-R,plotH=H-T-B,yMin=-3,yMax=3;
   const css=getComputedStyle(document.documentElement),border=css.getPropertyValue('--border').trim(),muted=css.getPropertyValue('--muted').trim(),surface=css.getPropertyValue('--surface').trim();
   const x=i=>L+(data.length===1?0:i/(data.length-1))*plotW,y=v=>T+(yMax-v)/(yMax-yMin)*plotH;
   const bands=[
@@ -916,32 +1028,35 @@ function drawOniChart(){
   s+=`<rect id="oniHover" x="${L}" y="${T}" width="${plotW}" height="${plotH}" fill="transparent"/><line id="oniHoverLine" x1="0" y1="${T}" x2="0" y2="${H-B}" stroke="${muted}" stroke-width="1" opacity="0" pointer-events="none"/><circle id="oniHoverPoint" cx="0" cy="0" r="5" fill="#ffffff" stroke="#222" stroke-width="1.5" opacity="0" pointer-events="none"/>`;
   svg.innerHTML=s;
   const hover=svg.querySelector('#oniHover'),hline=svg.querySelector('#oniHoverLine'),point=svg.querySelector('#oniHoverPoint'),tip=document.getElementById('oniTooltip'),shell=document.getElementById('oniChartShell');
-  function move(ev){if(panState.oni)return;const r=svg.getBoundingClientRect(),px=(ev.clientX-r.left)/r.width*W,plotFrac=Math.max(0,Math.min(1,(px-L)/plotW)),i=Math.round(plotFrac*(data.length-1)),d=data[i],xx=x(i),yy=y(d.value),c=classify(d.value);hline.setAttribute('x1',xx);hline.setAttribute('x2',xx);hline.setAttribute('opacity','.8');point.setAttribute('cx',xx);point.setAttribute('cy',yy);point.setAttribute('opacity','1');tip.innerHTML=`<strong>${d.period}</strong><br>ONI: <span class="${c.cls}">${fmt(d.value)}</span><br>${c.label}`;const sr=shell.getBoundingClientRect();tip.style.left=`${Math.min(sr.width-155,Math.max(5,ev.clientX-sr.left))}px`;tip.style.top=`${Math.max(48,ev.clientY-sr.top)}px`;tip.classList.add('show')}
+  function move(ev){if(panState.oni)return;const r=svg.getBoundingClientRect(),px=(ev.clientX-r.left)/r.width*W,plotFrac=Math.max(0,Math.min(1,(px-L)/plotW)),i=Math.round(plotFrac*(data.length-1)),d=data[i],xx=x(i),yy=y(d.value),c=classify(d.value);hline.setAttribute('x1',xx);hline.setAttribute('x2',xx);hline.setAttribute('opacity','.8');point.setAttribute('cx',xx);point.setAttribute('cy',yy);point.setAttribute('opacity','1');tip.innerHTML=`<strong>${d.period}</strong><br>${label}: <span class="${c.cls}">${fmt(d.value)}</span><br>${c.label}`;const sr=shell.getBoundingClientRect();tip.style.left=`${Math.min(sr.width-155,Math.max(5,ev.clientX-sr.left))}px`;tip.style.top=`${Math.max(48,ev.clientY-sr.top)}px`;tip.classList.add('show')}
   hover.addEventListener('mousemove',move);
   hover.addEventListener('mouseleave',()=>{hline.setAttribute('opacity','0');point.setAttribute('opacity','0');tip.classList.remove('show')});
-  hover.addEventListener('wheel',ev=>{ev.preventDefault();const rect=svg.getBoundingClientRect(),frac=Math.max(0,Math.min(1,(ev.clientX-rect.left)/rect.width));const oldZoom=oniView.zoom,newZoom=Math.max(1,Math.min(12,oldZoom*(ev.deltaY<0?1.25:.8)));if(newZoom!==oldZoom){const vis=visibleSlice(oniSeries,oniView),globalIdx=vis.start+frac*Math.max(1,vis.slice.length-1);oniView.zoom=newZoom;oniView.center=Math.max(0,Math.min(1,globalIdx/(oniSeries.length-1)));document.getElementById('oniZoomLabel').textContent=`${newZoom.toFixed(newZoom%1?1:0)}×`;drawOniChart()}},{passive:false});
+  hover.addEventListener('wheel',ev=>{ev.preventDefault();const rect=svg.getBoundingClientRect(),frac=Math.max(0,Math.min(1,(ev.clientX-rect.left)/rect.width));const oldZoom=oniView.zoom,newZoom=Math.max(1,Math.min(12,oldZoom*(ev.deltaY<0?1.25:.8)));if(newZoom!==oldZoom){const vis=visibleSlice(full,oniView),globalIdx=vis.start+frac*Math.max(1,vis.slice.length-1);oniView.zoom=newZoom;oniView.center=Math.max(0,Math.min(1,globalIdx/(full.length-1)));document.getElementById('oniZoomLabel').textContent=`${newZoom.toFixed(newZoom%1?1:0)}×`;drawIndexChart()}},{passive:false});
   svg.classList.toggle('is-zoomed',oniView.zoom>1);svg.classList.toggle('is-dragging',!!panState.oni);
   svg.onpointerdown=ev=>{if(oniView.zoom<=1||ev.button!==0)return;panState.oni={x:ev.clientX,center:oniView.center,pointerId:ev.pointerId};svg.setPointerCapture?.(ev.pointerId);tip.classList.remove('show');svg.classList.add('is-dragging');ev.preventDefault()};
-  svg.onpointermove=ev=>{const st=panState.oni;if(!st)return;const rect=svg.getBoundingClientRect(),dx=ev.clientX-st.x;oniView.center=Math.max(0,Math.min(1,st.center-dx/Math.max(1,rect.width)/oniView.zoom));drawOniChart()};
+  svg.onpointermove=ev=>{const st=panState.oni;if(!st)return;const rect=svg.getBoundingClientRect(),dx=ev.clientX-st.x;oniView.center=Math.max(0,Math.min(1,st.center-dx/Math.max(1,rect.width)/oniView.zoom));drawIndexChart()};
   const endPan=ev=>{if(!panState.oni)return;try{svg.releasePointerCapture?.(panState.oni.pointerId)}catch(_e){}panState.oni=null;svg.classList.remove('is-dragging');svg.classList.toggle('is-zoomed',oniView.zoom>1)};
   svg.onpointerup=endPan;svg.onpointercancel=endPan;
 }
 
-function detectEpisodes(){const out=[];let run=[],sign=0;const flush=()=>{if(run.length>=5){const values=run.map(d=>d.value),peak=sign>0?Math.max(...values):Math.min(...values);out.push({start:run[0].period,end:run.at(-1).period,sign,peak,n:run.length})}run=[]};for(const d of oniSeries){const s=d.value>=.5?1:d.value<=-.5?-1:0;if(s&&s===sign)run.push(d);else{flush();sign=s;if(s)run=[d]}}flush();return out}
+function currentEpisodeSeries(){return selectedEpisodeSeries==='roni'?roniSeries:oniSeries}
+function currentEpisodeLabel(){return selectedEpisodeSeries==='roni'?'RONI':'ONI'}
+function updateEpisodeSource(){const el=document.getElementById('episodeSourceBox');if(!el)return;if(selectedEpisodeSeries==='roni')el.innerHTML=`<strong>${tx('Fonte:','Source:')}</strong> NOAA Climate Prediction Center · Relative Oceanic Niño Index (RONI) <a href="${SOURCE_URLS.roni}" target="_blank" rel="noopener">${tx('acessar dados ↗','view data ↗')}</a>`;else el.innerHTML=`<strong>${tx('Fonte:','Source:')}</strong> NOAA Physical Sciences Laboratory / Climate Prediction Center · Oceanic Niño Index (ONI) <a href="${SOURCE_URLS.oni}" target="_blank" rel="noopener">${tx('acessar dados ↗','view data ↗')}</a>`}
+function detectEpisodes(){const out=[];let run=[],sign=0;const flush=()=>{if(run.length>=5){const values=run.map(d=>d.value),peak=sign>0?Math.max(...values):Math.min(...values);out.push({start:run[0].period,end:run.at(-1).period,sign,peak,n:run.length})}run=[]};for(const d of currentEpisodeSeries()){const s=d.value>=.5?1:d.value<=-.5?-1:0;if(s&&s===sign)run.push(d);else{flush();sign=s;if(s)run=[d]}}flush();return out}
 function episodeIntensity(e){const a=Math.abs(e.peak);if(a>=2)return{key:'very-strong',pt:'Muito forte',en:'Very strong'};if(a>=1.5)return{key:'strong',pt:'Forte',en:'Strong'};if(a>=1)return{key:'moderate',pt:e.sign>0?'Moderado':'Moderada',en:'Moderate'};return{key:'weak',pt:e.sign>0?'Fraco':'Fraca',en:'Weak'}}
 function episodeYears(e){const ys=(e.start.match(/(\d{4})/)||[])[1],ye=(e.end.match(/(\d{4})/)||[])[1];return ys&&ye?(ys===ye?ys:`${ys}–${ye}`):`${e.start} – ${e.end}`}
 function episodeType(e){const i=episodeIntensity(e),phase=e.sign>0?'El Niño':'La Niña';return `${phase} · ${currentLang==='en'?i.en:i.pt}`}
 function positionEpisodeTooltip(ev,el){const tip=document.getElementById('episodeTooltip');let x,y;if(ev&&Number.isFinite(ev.clientX)){x=ev.clientX+14;y=ev.clientY+14}else{const r=el.getBoundingClientRect();x=r.right+10;y=r.top}const w=tip.offsetWidth||250,h=tip.offsetHeight||150;x=Math.min(window.innerWidth-w-10,Math.max(10,x));y=Math.min(window.innerHeight-h-10,Math.max(10,y));tip.style.left=`${x}px`;tip.style.top=`${y}px`}
 function showEpisodeTooltip(e,ev,el){const tip=document.getElementById('episodeTooltip');tip.innerHTML=`<strong>${episodeYears(e)} · ${episodeType(e)}</strong><div class="episode-tooltip-grid"><span>${tx('Início','Start')}</span><b>${e.start}</b><span>${tx('Fim','End')}</span><b>${e.end}</b><span>${tx('Tipo','Type')}</span><b>${episodeType(e)}</b><span>${tx('Pico','Peak')}</span><b class="${e.sign>0?'warm':'cold'}">${fmt(e.peak)}</b><span>${tx('Janelas consecutivas','Consecutive windows')}</span><b>${e.n}</b></div>`;tip.classList.add('show');positionEpisodeTooltip(ev,el)}
 function hideEpisodeTooltip(){document.getElementById('episodeTooltip')?.classList.remove('show')}
-function renderEpisodes(){const eps=detectEpisodes();const warm=eps.filter(e=>e.sign>0),cold=eps.filter(e=>e.sign<0);const makeColumn=(items,sign)=>{const phase=sign>0?'El Niño':'La Niña',cls=sign>0?'elnino':'lanina';return `<div class="episode-column"><div class="episode-column-head"><h3>${phase}</h3><span>${items.length} ${tx('episódios','episodes')}</span></div><div class="episode-list">${items.map((e,idx)=>{const i=episodeIntensity(e);return `<button type="button" class="episode-event ${cls} ${i.key}" data-episode-sign="${sign}" data-episode-index="${idx}" aria-label="${phase}, ${episodeYears(e)}, ${currentLang==='en'?i.en:i.pt}">${episodeYears(e)}</button>`}).join('')}</div></div>`};const visual=document.getElementById('episodeVisual');visual.innerHTML=makeColumn(warm,1)+makeColumn(cold,-1);visual.querySelectorAll('.episode-event').forEach(btn=>{const arr=+btn.dataset.episodeSign>0?warm:cold,e=arr[+btn.dataset.episodeIndex];btn.addEventListener('mouseenter',ev=>showEpisodeTooltip(e,ev,btn));btn.addEventListener('mousemove',ev=>positionEpisodeTooltip(ev,btn));btn.addEventListener('mouseleave',hideEpisodeTooltip);btn.addEventListener('focus',()=>showEpisodeTooltip(e,null,btn));btn.addEventListener('blur',hideEpisodeTooltip)});document.getElementById('episodeRawBody').innerHTML=eps.map(e=>{const i=episodeIntensity(e);return `<tr><td>${e.start}</td><td>${e.end}</td><td>${e.sign>0?'El Niño':'La Niña'}</td><td>${currentLang==='en'?i.en:i.pt}</td><td class="${e.sign>0?'warm':'cold'}">${fmt(e.peak)}</td><td>${e.n}</td></tr>`}).join('')}
+function renderEpisodes(){const label=currentEpisodeLabel(),eps=detectEpisodes();const warm=eps.filter(e=>e.sign>0),cold=eps.filter(e=>e.sign<0);const legend=document.getElementById('episodeLegendTitle'),note=document.getElementById('episodeNote');if(legend)legend.textContent=`${tx('Intensidade pelo pico do','Intensity by peak')} ${label}`;if(note)note.textContent=currentLang==='en'?`Criterion: at least five consecutive windows with ${label} ≥ +0.5°C for El Niño or ${label} ≤ −0.5°C for La Niña. The displayed class corresponds to the largest absolute ${label} value reached during each episode.`:`Critério: pelo menos cinco janelas consecutivas com ${label} ≥ +0,5°C para El Niño ou ${label} ≤ −0,5°C para La Niña. A classe exibida corresponde ao maior valor absoluto de ${label} atingido durante cada episódio.`;const makeColumn=(items,sign)=>{const phase=sign>0?'El Niño':'La Niña',cls=sign>0?'elnino':'lanina';return `<div class="episode-column"><div class="episode-column-head"><h3>${phase}</h3><span>${items.length} ${tx('episódios','episodes')}</span></div><div class="episode-list">${items.map((e,idx)=>{const i=episodeIntensity(e);return `<button type="button" class="episode-event ${cls} ${i.key}" data-episode-sign="${sign}" data-episode-index="${idx}" aria-label="${phase}, ${episodeYears(e)}, ${currentLang==='en'?i.en:i.pt}">${episodeYears(e)}</button>`}).join('')}</div></div>`};const visual=document.getElementById('episodeVisual');visual.innerHTML=makeColumn(warm,1)+makeColumn(cold,-1);visual.querySelectorAll('.episode-event').forEach(btn=>{const arr=+btn.dataset.episodeSign>0?warm:cold,e=arr[+btn.dataset.episodeIndex];btn.addEventListener('mouseenter',ev=>showEpisodeTooltip(e,ev,btn));btn.addEventListener('mousemove',ev=>positionEpisodeTooltip(ev,btn));btn.addEventListener('mouseleave',hideEpisodeTooltip);btn.addEventListener('focus',()=>showEpisodeTooltip(e,null,btn));btn.addEventListener('blur',hideEpisodeTooltip)});document.getElementById('episodeRawBody').innerHTML=eps.map(e=>{const i=episodeIntensity(e);return `<tr><td>${e.start}</td><td>${e.end}</td><td>${e.sign>0?'El Niño':'La Niña'}</td><td>${currentLang==='en'?i.en:i.pt}</td><td class="${e.sign>0?'warm':'cold'}">${fmt(e.peak)}</td><td>${e.n}</td></tr>`}).join('');updateEpisodeSource()}
 
 function currentRegionData(){return selectedFrequency==='monthly'?monthlyRelative:weeklyRelative}
 function currentRegionValue(d){return d[REGION_META[selectedRegion][selectedFrequency==='monthly'?'monthlyKey':'weeklyKey']]}
 function updateRegionImage(){const meta=REGION_META[selectedRegion],stage=document.getElementById('regionImageStage'),img=document.getElementById('regionImage'),placeholder=document.getElementById('regionImagePlaceholder');stage.classList.remove('image-missing');img.style.display='block';img.alt=`Localização da região ${meta.name} no Pacífico tropical`;placeholder.textContent=`Imagem da região ${meta.name}`;img.onerror=()=>{stage.classList.add('image-missing')};img.onload=()=>{stage.classList.remove('image-missing')};img.src=meta.image}
 function selectRegion(key){selectedRegion=key;regionView={zoom:1,center:.5};document.getElementById('regionZoomLabel').textContent='1×';document.querySelectorAll('.region-card').forEach(b=>b.classList.toggle('active',b.dataset.region===key));updateRegionImage();renderRegion()}
-function selectFrequency(freq){selectedFrequency=freq;regionView={zoom:1,center:.5};document.getElementById('regionZoomLabel').textContent='1×';document.querySelectorAll('.seg-btn').forEach(b=>b.classList.toggle('active',b.dataset.frequency===freq));renderRegion()}
-document.querySelectorAll('.region-card').forEach(b=>b.addEventListener('click',()=>selectRegion(b.dataset.region)));document.querySelectorAll('.seg-btn').forEach(b=>b.addEventListener('click',()=>selectFrequency(b.dataset.frequency)));
+function selectFrequency(freq){selectedFrequency=freq;regionView={zoom:1,center:.5};document.getElementById('regionZoomLabel').textContent='1×';document.querySelectorAll('[data-frequency]').forEach(b=>b.classList.toggle('active',b.dataset.frequency===freq));renderRegion()}
+document.querySelectorAll('.region-card').forEach(b=>b.addEventListener('click',()=>selectRegion(b.dataset.region)));document.querySelectorAll('[data-frequency]').forEach(b=>b.addEventListener('click',()=>selectFrequency(b.dataset.frequency)));
 document.getElementById('regionFilter').addEventListener('input',()=>renderRegionRaw());
 function updateRegionCardValues(){const data=currentRegionData();for(const key of Object.keys(REGION_META)){const el=document.getElementById(`cardVal-${key}`);if(!el)continue;if(!data.length){el.textContent='—';el.className='region-card-value neutral';continue}const v=data.at(-1)[key];el.textContent=fmt(v);el.className=`region-card-value ${v>.05?'warm':v<-.05?'cold':'neutral'}`}}
 function renderRegion(){const data=currentRegionData();updateRegionCardValues();updateRegionImage();const source=document.getElementById('regionSourceBox');if(selectedFrequency==='monthly')source.innerHTML=`<strong>${tx('Fonte:','Source:')}</strong> NOAA Climate Prediction Center · Monthly Relative OISSTv2.1 (${tx('base','base')} 1991–2020) <a href="${SOURCE_URLS.monthlyRelative}" target="_blank" rel="noopener">${tx('acessar dados mensais ↗','view monthly data ↗')}</a>`;else source.innerHTML=`<strong>${tx('Fonte:','Source:')}</strong> NOAA Climate Prediction Center · Weekly Relative OISSTv2.1 (${tx('base','base')} 1991–2020) <a href="${SOURCE_URLS.weeklyRelative}" target="_blank" rel="noopener">${tx('acessar dados semanais ↗','view weekly data ↗')}</a>`;const msg=document.getElementById('regionMessage'),svg=document.getElementById('regionChart');if(!data.length){svg.innerHTML='';msg.hidden=false;renderRegionRaw();return}msg.hidden=true;renderRegionChart();renderRegionRaw()}
