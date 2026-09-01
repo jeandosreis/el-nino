@@ -208,6 +208,9 @@ footer{padding:28px 0 6px;color:var(--muted);font-size:11px;text-align:center}.f
         <span class="talanoa-main" data-pt="Monitor de atos públicos brasileiros" data-en="Brazilian public acts monitor">Monitor de atos públicos brasileiros</span>
         <span class="talanoa-by" data-pt="por Instituto Talanoa" data-en="by Instituto Talanoa">por Instituto Talanoa</span>
       </a>
+      <a class="project-link" href="https://jeandosreis.github.io/enso-health-papers-monitor/" target="_blank" rel="noopener">
+        <span data-pt="Monitor de paper de ENSO e Saúde" data-en="ENSO and Health Papers Monitor">Monitor de paper de ENSO e Saúde</span> ↗
+      </a>
     </div>
   </section>
 
@@ -275,7 +278,7 @@ footer{padding:28px 0 6px;color:var(--muted);font-size:11px;text-align:center}.f
         <button class="seg-btn active" data-index-series="roni" type="button" data-pt="RONI · oficial atual" data-en="RONI · current official">RONI · oficial atual</button>
         <button class="seg-btn" data-index-series="oni" type="button" data-pt="ONI · índice tradicional" data-en="ONI · traditional index">ONI · índice tradicional</button>
       </div>
-      <div class="index-switch-note" data-pt="O RONI é a média móvel de três meses do Niño 3.4 relativo e desconta a anomalia média dos trópicos (20°N–20°S)." data-en="RONI is the three-month running mean of relative Niño 3.4 and subtracts the mean tropical anomaly (20°N–20°S).">O RONI é a média móvel de três meses do Niño 3.4 relativo e desconta a anomalia média dos trópicos (20°N–20°S).</div>
+      <div class="index-switch-note" id="indexSwitchNote" data-pt-roni="O RONI é a média móvel de três meses do Niño 3.4 relativo e desconta a anomalia média dos trópicos (20°N–20°S)." data-en-roni="RONI is the three-month running mean of relative Niño 3.4 and subtracts the mean tropical anomaly (20°N–20°S)." data-pt-oni="O ONI é a média móvel de três meses das anomalias de temperatura da superfície do mar na região Niño 3.4 e representa o índice tradicional historicamente utilizado pela NOAA." data-en-oni="ONI is the three-month running mean of sea-surface temperature anomalies in the Niño 3.4 region and represents the traditional index historically used by NOAA.">O RONI é a média móvel de três meses do Niño 3.4 relativo e desconta a anomalia média dos trópicos (20°N–20°S).</div>
     </div>
     <div class="view-tabs" role="tablist" aria-label="Visualização RONI e ONI">
       <button class="view-tab active" data-tabs="oni" data-target="chart" type="button" data-pt="Gráfico" data-en="Chart">Gráfico</button>
@@ -835,7 +838,8 @@ function parseRoniText(text){
 function fallbackRoni(){return parseRoniText(FALLBACK_RONI_TEXT)}
 function currentIndexSeries(){return selectedIndexSeries==='roni'?roniSeries:oniSeries}
 function currentIndexLabel(){return selectedIndexSeries==='roni'?'RONI':'ONI'}
-function updateIndexSource(){const el=document.getElementById('indexSourceBox');if(!el)return;if(selectedIndexSeries==='roni')el.innerHTML=`<strong>${tx('Fonte:','Source:')}</strong> NOAA Climate Prediction Center · Relative Oceanic Niño Index (RONI) <a href="${SOURCE_URLS.roni}" target="_blank" rel="noopener">${tx('acessar dados ↗','view data ↗')}</a>`;else el.innerHTML=`<strong>${tx('Fonte:','Source:')}</strong> NOAA Physical Sciences Laboratory / Climate Prediction Center · Oceanic Niño Index (ONI) <a href="${SOURCE_URLS.oni}" target="_blank" rel="noopener">${tx('acessar dados ↗','view data ↗')}</a>`}
+function updateIndexSwitchNote(){const el=document.getElementById('indexSwitchNote');if(!el)return;const key=(currentLang==='en'?'en':'pt')+(selectedIndexSeries==='oni'?'Oni':'Roni');const map={ptRoni:el.dataset.ptRoni,enRoni:el.dataset.enRoni,ptOni:el.dataset.ptOni,enOni:el.dataset.enOni};el.textContent=map[key]||map.ptRoni||''}
+function updateIndexSource(){const el=document.getElementById('indexSourceBox');if(!el)return;if(selectedIndexSeries==='roni')el.innerHTML=`<strong>${tx('Fonte:','Source:')}</strong> NOAA Climate Prediction Center · Relative Oceanic Niño Index (RONI) <a href="${SOURCE_URLS.roni}" target="_blank" rel="noopener">${tx('acessar dados ↗','view data ↗')}</a>`;else el.innerHTML=`<strong>${tx('Fonte:','Source:')}</strong> NOAA Physical Sciences Laboratory / Climate Prediction Center · Oceanic Niño Index (ONI) <a href="${SOURCE_URLS.oni}" target="_blank" rel="noopener">${tx('acessar dados ↗','view data ↗')}</a>`;updateIndexSwitchNote()}
 
 function parseMonthlyRelative(text){const rows=[];text.split(/\r?\n/).forEach(line=>{const p=line.trim().split(/\s+/);if(p.length>=6&&/^\d{4}$/.test(p[0])){const year=+p[0],month=+p[1],n12=+p[2],n3=+p[3],n4=+p[4],n34=+p[5];if([n12,n3,n4,n34].every(Number.isFinite))rows.push({year,month,date:isoDate(year,month,1),label:monthLabel(year,month),n12,n3,n4,n34})}});return rows}
 function parseWeeklyRelative(text){const rows=[];text.split(/\r?\n/).forEach(line=>{const p=line.trim().split(/\s+/);if(p.length>=5){const m=p[0].match(/^(\d{2})([A-Z]{3})(\d{4})$/);if(m){const day=+m[1],month=WEEK_MONTHS[m[2]],year=+m[3],n12=+p[1],n3=+p[2],n34=+p[3],n4=+p[4];if(month&&[n12,n3,n34,n4].every(Number.isFinite))rows.push({year,month,day,date:isoDate(year,month,day),label:`${String(day).padStart(2,'0')} ${MONTHS[month-1]} ${year}`,n12,n3,n34,n4})}}});return rows}
